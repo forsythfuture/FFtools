@@ -1,0 +1,20 @@
+Package: FFtools
+Type: Package
+Title: Consolidates common functions and commands used by Forsyth Futures
+Version: 0.1.0
+Author: Shane Orr
+Maintainer: Shane Orr <shane@forsythfutures.com>
+Description: Forsyth Futures routinely works with common datasets such as American Community Survey (ACS) tables
+    and the ACS Public Use Microdata Sample (PUMS). We also perform repeat operations on datasets, such as adjusting
+    for inflation. This package bundles common functions and commands.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    dplyr,
+    tidyr,
+    stringr,
+    knitr,
+    kableExtra,
+    magrittr
+RoxygenNote: 6.1.1
