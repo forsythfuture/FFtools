@@ -5,7 +5,8 @@
 \title{Matrix of significance tests}
 \usage{
 ff_sigtest(data_frame, estimate, se, test = "z", success = NULL,
-  trials = NULL, var_names = NULL)
+  trials = NULL, var_names = NULL, pretty_print = FALSE,
+  table_name = NULL)
 }
 \arguments{
 \item{data_frame}{A dataframe containing estimates and either standard errors for z-score test
@@ -21,8 +22,13 @@ or successes and trials for a Chi-Square test.}
 
 \item{trials}{The total number of trials. Required for Chi-Square test.}
 
-\item{var_names}{a character vector of variables that can be combined to create
+\item{var_names}{A character vector of variables that can be combined to create
 distinct names for each row and column.}
+
+\item{pretty_print}{Boolean (TRUE / FALSE) indicating whether to return the table as a Kable HTML table that bolds
+statistically significant finding and creates other stylistic changes. Default is FALSE.}
+
+\item{table_name}{Character string to use as the name of the Kable table. Only used if `pretty_print` is TRUE.}
 }
 \value{
 A square, symmetrical, with a length and width equal the number of rows in the data frame.

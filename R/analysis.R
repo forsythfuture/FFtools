@@ -14,8 +14,11 @@
 #' @param test The significance test to conduct. Either "zscore" or "chi-square". Defaults to 'zscore'.
 #' @param success The number of successful trials. Required for Chi-Square test.
 #' @param trials The total number of trials. Required for Chi-Square test.
-#' @param var_names a character vector of variables that can be combined to create
+#' @param var_names A character vector of variables that can be combined to create
 #'     distinct names for each row and column.
+#' @param pretty_print Boolean (TRUE / FALSE) indicating whether to return the table as a Kable HTML table that bolds
+#'     statistically significant finding and creates other stylistic changes. Default is FALSE.
+#' @param table_name Character string to use as the name of the Kable table. Only used if `pretty_print` is TRUE.
 #' @return A square, symmetrical, with a length and width equal the number of rows in the data frame.
 #'     Each cell in the matrix contains the results of the significance test from the row in the original
 #'     dataframe represented by the column, and the row represented by the row in the matrix.
@@ -37,7 +40,8 @@
 #' @export
 #' @importFrom magrittr "%>%"
 ff_sigtest <- function(data_frame, estimate, se, test = 'z',
-                       success = NULL, trials = NULL, var_names = NULL) {
+                       success = NULL, trials = NULL, var_names = NULL,
+                       pretty_print = FALSE, table_name = NULL) {
 
   # initialize an empty data frame with one column and the same number
   # of rows as the final dataframe
@@ -143,7 +147,17 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'z',
 
   }
 
-  return(sigtest_mat)
+  # create formatted Kable table if requested
+  if (pretty_print == TRUE) {
+
+    return(ff_sigtest_kable(sigtest_matrix = sigtest_mat,
+                            test = test, table_name = table_name))
+
+  } else {
+
+    return(sigtest_mat)
+
+  }
 
 }
 
@@ -173,7 +187,6 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'z',
 #'            test = 'zscore', var_names = c('year', 'geo_description')) %>%
 #'            # Pipe significance testing matrix into function creating kable table
 #'            ff_sigtest_kable(sigtest_matrix = ., test = 'zscore', table_name = 'Example table')
-#' @export
 #' @importFrom magrittr "%>%"
 ff_sigtest_kable <- function(sigtest_matrix, test = 'zscore',
                              table_name = NULL) {
