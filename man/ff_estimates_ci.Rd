@@ -33,7 +33,8 @@ statistically significant finding and creates other stylistic changes. Default i
 }
 \value{
 A square, symmetrical, with a length and width equal the number of rows in the data frame.
-    Each cell in the matrix contains the difference in the estimate of the column minus the row.
+    Each cell in the matrix contains the difference in the estimate of the column minus the row. It
+    also contains the 95 percent confidence interval of the difference.
 }
 \description{
 This function returns a square symetrical matrix of all differences between all combinations of rows,
@@ -41,18 +42,14 @@ along with the 95 percent confidence interval of the difference. For binomial (c
 percentile difference.
 }
 \examples{
-df <- data.frame(year = c(2016, 2017),
-                 geo_description = c('Forsyth County, NC', 'Guilford County, NC'),
-                 estimate = c(1,2),
-                 se = c(.2, .3),
-                 success = c(10, 12),
-                 trials = c(15, 19))
+df <- data.frame(year = c(2016, 2016, 2017, 2017),
+geo_description = c('Forsyth County, NC', 'Guilford County, NC',
+                    'Forsyth County, NC', 'Guilford County, NC'),
+estimate = c(.66, .63, .88, .48),
+success = c(10, 12, 15, 19),
+trials = c(15, 19, 17, 39))
 
-# Z score test
-ff_sigtest(data_frame = df, estimate = 'estimate', se = 'se',
-           test = 'zscore', var_names = c('year', 'geo_description'))
-
-# Chi-Square test
-ff_sigtest(data_frame = df, estimate = 'estimate', success = 'success', trials = 'trials',
-           test = 'chi-square', var_names = c('year', 'geo_description'))
+# binomial data
+ff_estimates_ci(df, 'estimate', format = 'binomial',
+                success = 'success', trials = 'trials', var_names = c('year', 'geo_description'))
 }

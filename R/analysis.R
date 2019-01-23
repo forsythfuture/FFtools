@@ -39,7 +39,7 @@
 #'            test = 'chi-square', var_names = c('year', 'geo_description'))
 #' @export
 #' @importFrom magrittr "%>%"
-ff_sigtest <- function(data_frame, estimate, se, test = 'z',
+ff_sigtest <- function(data_frame, estimate, se, test = 'zscore',
                        success = NULL, trials = NULL, var_names = NULL,
                        pretty_print = FALSE, table_name = NULL) {
 
@@ -70,9 +70,7 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'z',
 
     # make sure there are columns called 'success' and 'trials'
     if (!(('success' %in% colnames(data_frame)) & ('trials' %in% colnames(data_frame)))) {
-
       stop("The 'success' and 'trials' columns are missing.")
-
     }
 
     # create vectors of counts and totals,
@@ -93,9 +91,7 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'z',
     }
 
   } else {
-
     stop("Test must be either 'zscore' or 'chi-square'")
-
   }
 
   if (!is.null(var_names)) {
@@ -107,8 +103,12 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'z',
   # create formatted Kable table if requested
   if (pretty_print == TRUE) {
 
-    return(ff_sigtest_kable(sigtest_matrix = sigtest_mat,
-                            test = test, table_name = table_name))
+    # create variable signifying which type of test was run
+    # to be used as parameter for next function
+    test_type <- if (test == 'zscore') 'continous' else if (test == 'chi-square') 'binomial'
+
+    return(ff_pretty_kable(data_matrix = sigtest_mat, table_type = 'sigtest',
+                           format = test_type, table_name = table_name))
 
   } else {
 
@@ -138,22 +138,19 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'z',
 #'     statistically significant finding and creates other stylistic changes. Default is FALSE.
 #' @param table_name Character string to use as the name of the Kable table. Only used if `pretty_print` is TRUE.
 #' @return A square, symmetrical, with a length and width equal the number of rows in the data frame.
-#'     Each cell in the matrix contains the difference in the estimate of the column minus the row.
+#'     Each cell in the matrix contains the difference in the estimate of the column minus the row. It
+#'     also contains the 95 percent confidence interval of the difference.
 #' @examples
-#' df <- data.frame(year = c(2016, 2017),
-#'                  geo_description = c('Forsyth County, NC', 'Guilford County, NC'),
-#'                  estimate = c(1,2),
-#'                  se = c(.2, .3),
-#'                  success = c(10, 12),
-#'                  trials = c(15, 19))
+#' df <- data.frame(year = c(2016, 2016, 2017, 2017),
+#'                  geo_description = c('Forsyth County, NC', 'Guilford County, NC',
+#'                                      'Forsyth County, NC', 'Guilford County, NC'),
+#'                 estimate = c(.66, .63, .88, .48),
+#'                 success = c(10, 12, 15, 19),
+#'                 trials = c(15, 19, 17, 39))
 #'
-#' # Z score test
-#' ff_sigtest(data_frame = df, estimate = 'estimate', se = 'se',
-#'            test = 'zscore', var_names = c('year', 'geo_description'))
-#'
-#' # Chi-Square test
-#' ff_sigtest(data_frame = df, estimate = 'estimate', success = 'success', trials = 'trials',
-#'            test = 'chi-square', var_names = c('year', 'geo_description'))
+#' # binomial data
+#' ff_estimates_ci(df, 'estimate', format = 'binomial',
+#'                 success = 'success', trials = 'trials', var_names = c('year', 'geo_description'))
 #' @export
 #' @importFrom magrittr "%>%"
 ff_estimates_ci <- function(data_frame, estimate, se, format,
@@ -207,9 +204,7 @@ ff_estimates_ci <- function(data_frame, estimate, se, format,
     }
 
   } else {
-
     stop("format value must be either 'continous' or 'binomial'.")
-
   }
 
   if (!is.null(var_names)) {
@@ -218,7 +213,17 @@ ff_estimates_ci <- function(data_frame, estimate, se, format,
 
   }
 
-  return(estimate_mat)
+  # create formatted Kable table if requested
+  if (pretty_print == TRUE) {
+
+    return(ff_pretty_kable(data_matrix = estimate_mat, table_type = 'estimate',
+                           format = format, table_name = table_name))
+
+  } else {
+
+    return(estimate_mat)
+
+  }
 
 }
 
@@ -248,52 +253,58 @@ ff_proportions <- function(successes, trials) {
 
 }
 
-#' Pretty formatting of significance testing tables with Kable
+#' Pretty formatting of significance testing nd estimate tables with Kable
 #'
 #' This function elegantly formats significance testing matrices produces
-#' by `ff_sigtest`. It bolds cells that are statistically significant, only
+#' by `ff_sigtest` or estimate matrices produced by `ff_estimates_ci`.
+#' It bolds cells that are statistically significant (for significance testing matrices), only
 #' keeps rows for Forsyth County, and makes other minor stylistic changes.
 #'
-#' @param sigtest_matrix A matrix produced by `ff_sigtest`.
-#' @param test The significance test to conduct. Either "zscore" or "chi-square". Defaults to 'zscore'.
-#'     Test must be the same test used in `ff_sigtest`.
+#' @param data_matrix A matrix produced by `ff_sigtest` or `ff_estimates_ci`.
+#' @param table_type Either 'sigtest' or 'estimate'. Specifies whether the table was generated by
+#'     `ff_sigtest` and has results from a significance test; or whether the table was generated
+#'     by `ff_estimates_ci` and has estimates and confidence intervals.
+#' @param format Type of data; either 'continous' or 'binomial'. Defaults to 'continous'.
 #' @param table_name A string of characters representing the table name. It is displayed above the table.
 #'     Defautls to no table name.
 #' @return An html-based Kable table.
-#' @examples
-#' df <- data.frame(year = c(2016, 2017),
-#'                  geo_description = c('Forsyth County, NC', 'Guilford County, NC'),
-#'                  estimate = c(1,2),
-#'                  se = c(.2, .3),
-#'                  success = c(10, 12),
-#'                  trials = c(15, 19))
-#'
-#' # Use ff_sigtest to create significance testing matrix
-#' ff_sigtest(data_frame = df, estimate = 'estimate', se = 'se',
-#'            test = 'zscore', var_names = c('year', 'geo_description')) %>%
-#'            # Pipe significance testing matrix into function creating kable table
-#'            ff_sigtest_kable(sigtest_matrix = ., test = 'zscore', table_name = 'Example table')
 #' @importFrom magrittr "%>%"
-ff_sigtest_kable <- function(sigtest_matrix, test = 'zscore',
-                             table_name = NULL) {
+ff_pretty_kable <- function(data_matrix, table_type, format = 'continous',
+                            table_name = NULL) {
 
-  # for z-score we want to bold anything over 1.96,
-  # for chi-square, we want to bold anything under 0.05
-  # each of these values represent the significance threshold
-  thresh <- if (test == 'zscore') 1.96 else 0.05
+  # return error is table_type is not sigtest or estimate
+  if (!((table_type == 'sigtest') | (table_type == 'estimate'))) {
+    stop("table_type must be either 'sigtest' or 'estimate'.")
+  }
 
-  # we want to bold numbers over threshold for z and under threshold for chi-square
-  # due to this difference, we must create TRUE and FALSE values of whether to bold
-  # depending on what test is used
-  if_true_bold <- if (test =='zscore') T else F
-  if_false_bold <- if (test =='zscore') F else T
+  # for significance testing tables we need to bold statistically significant results
+  if (table_type == 'sigtest') {
 
-  sigtest_matrix %>%
-    # bold any z score over 1.96
-    dplyr::mutate_all(dplyr::funs(kableExtra::cell_spec(.,
-                                                        bold = ifelse(. > thresh,
-                                                                      if_true_bold,
-                                                                      if_false_bold)))) %>%
+    # ensure format is either continous or binomial
+    if (!((format == 'continous') | (format == 'binomial'))) {
+      stop("format must be either 'continous' or 'binomial'.")
+    }
+
+    # for z-score we want to bold anything over 1.96,
+    # for chi-square, we want to bold anything under 0.05
+    # each of these values represent the significance threshold
+    thresh <- if (format == 'continuous') 1.96 else 0.05
+
+    # we want to bold numbers over threshold for z and under threshold for chi-square
+    # due to this difference, we must create TRUE and FALSE values of whether to bold
+    # depending on what test is used
+    if_true_bold <- if (format == 'continuous') T else F
+    if_false_bold <- if (format == 'continuous') F else T
+
+    data_matrix <- data_matrix %>%
+      # bold any z score over 1.96
+      dplyr::mutate_all(dplyr::funs(kableExtra::cell_spec(.,
+                                                          bold = ifelse(. > thresh,
+                                                                        if_true_bold,
+                                                                        if_false_bold))))
+  }
+
+  data_matrix <- data_matrix %>%
     # add column names as the first row because row names do not print
     dplyr::mutate(Compare = colnames(.),
            # bold column of column / row names
@@ -309,6 +320,9 @@ ff_sigtest_kable <- function(sigtest_matrix, test = 'zscore',
                               full_width = F, position = "left", font_size = 10) %>%
     # bold row names
     kableExtra::column_spec(1, bold = T)
+
+  return(data_matrix)
+
 }
 
 #' Create variable names for tables
