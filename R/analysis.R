@@ -1,6 +1,6 @@
 #' Matrix of significance tests
 #'
-#' This function returns a square symetrical matrix of of all significance tests for all combinations of
+#' This function returns a square symetrical matrix of all significance tests for all combinations of
 #' values. It can calculate either a z-score or a p-value from a Chi-Square test of proportions.
 #' The matrix length and width equal the number of rows in the data frame.
 #'
@@ -100,50 +100,7 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'z',
 
   if (!is.null(var_names)) {
 
-    # if there is only one variable name, then use this as the label
-    # otherwise paste together variable names
-    if (length(var_names) == 1) {
-
-      # sometime isolating a column returns a data frame, and sometimes it returns a vector
-      # if a dataframe is returned, isolate first, and only, column as a vector
-      if (is.data.frame(unique(data_frame[ , var_names])) == TRUE) {
-
-        names_vec <- unique(data_frame[ , var_names])[[1]]
-
-      } else {
-
-        names_vec <- unique(data_frame[ , var_names])
-
-      }
-
-    } else {
-
-      # create vector of label names by pasting columns together
-      names_vec <- apply( data_frame[ , var_names], 1, paste, collapse = ": " )
-
-    }
-
-    # shorted names so they appear cleaner and shorter in the matrix as column and row headers
-
-    # replace any United States and North Carolina values with NC and US
-    names_vec <- stringr::str_replace_all(names_vec, 'United States', 'US') %>%
-      stringr::str_replace_all('North Carolina', 'NC') %>%
-      stringr::str_replace_all(' County, NC', '') %>%
-      # replace ethnicities with abbreviation
-      stringr::str_replace_all('African American', 'AA') %>%
-      stringr::str_replace_all('Hispanic/Latino', 'HL') %>%
-      stringr::str_replace_all('White, non-Hispanic', 'Wh') %>%
-      # shorten age descriptions (take off the word 'year')
-      stringr::str_replace_all(' years', '') %>%
-      stringr::str_replace_all(' and over', '+') %>%
-      # shorten age by converting 'to' to '-'
-      stringr::str_replace_all(' to ', '-') %>%
-      # remove word 'ratio;
-      stringr::str_replace_all(' ratio', '')
-
-    # add labels as column and row names
-    colnames(sigtest_mat) <- names_vec
-    row.names(sigtest_mat) <- names_vec
+    sigtest_mat <- ff_create_varnames(data_frame, sigtest_mat, var_names)
 
   }
 
@@ -161,6 +118,135 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'z',
 
 }
 
+#' Matrix of estimates and confidence intervals
+#'
+#' This function returns a square symetrical matrix of all differences between all combinations of rows,
+#' along with the 95% confidence interval of the difference. For binomial (categorical) datasets, the difference is the
+#' percentile difference.
+#'
+#' @param data_frame A dataframe containing estimates and either standard errors for continous data
+#'    or successes and trials for binomial data.
+#' @param estimate An integer or float containing the number to compare differences. Required for continous format.
+#' @param se Standard error of the estimate. Required for continuous format.
+#' @param format Type of data; either 'continous' or 'binomial'. If continous, the `estimate` columns is
+#'     used to generate differences. If binomial, the `success` and `trials` columns are used. Default is continous.
+#' @param success The number of successful trials. Required for binomial format.
+#' @param trials The total number of trials. Required for binomial format.
+#' @param var_names A character vector of variables that can be combined to create
+#'     distinct names for each row and column.
+#' @param pretty_print Boolean (TRUE / FALSE) indicating whether to return the table as a Kable HTML table that bolds
+#'     statistically significant finding and creates other stylistic changes. Default is FALSE.
+#' @param table_name Character string to use as the name of the Kable table. Only used if `pretty_print` is TRUE.
+#' @return A square, symmetrical, with a length and width equal the number of rows in the data frame.
+#'     Each cell in the matrix contains the difference in the estimate of the column minus the row.
+#' @examples
+#' df <- data.frame(year = c(2016, 2017),
+#'                  geo_description = c('Forsyth County, NC', 'Guilford County, NC'),
+#'                  estimate = c(1,2),
+#'                  se = c(.2, .3),
+#'                  success = c(10, 12),
+#'                  trials = c(15, 19))
+#'
+#' # Z score test
+#' ff_sigtest(data_frame = df, estimate = 'estimate', se = 'se',
+#'            test = 'zscore', var_names = c('year', 'geo_description'))
+#'
+#' # Chi-Square test
+#' ff_sigtest(data_frame = df, estimate = 'estimate', success = 'success', trials = 'trials',
+#'            test = 'chi-square', var_names = c('year', 'geo_description'))
+#' @export
+#' @importFrom magrittr "%>%"
+ff_estimates_ci <- function(data_frame, estimate, se, format,
+                            success = NULL, trials = NULL, var_names = NULL,
+                            pretty_print = FALSE, table_name = NULL) {
+
+  # This function takes as input a dataframe with estimates and standard errors,
+  # or successes and trials; and calcualted the estimated difference between two
+  # point estimates as well as 95% CIs
+
+  # initialize an empty data frame with one column and the same number
+  # of rows as the final dataframe
+  estimate_mat <- data.frame(n = seq(1, nrow(data_frame)))
+
+  if (format == 'continous') {
+
+    # iterate through each row in the dataframe
+    for (i in 1:nrow(data_frame)) {
+
+      # calculate the point estimate differences and the moe
+      # for the given row and all other rows this will return a vector
+      # must convert to character so estimates and CI can be pasted in single cell
+      estimate_diff <- data_frame[[i, estimate]] - data_frame[[estimate]]
+      moe_diff <- sqrt( data_frame[[i, se]]^2 + data_frame[[se]]^2 ) * 1.96
+
+      # create single cell that has estimate and CIs
+      cell_values <- sprintf("%.2f,\n[%.2f, %.2f]", estimate_diff, estimate_diff-moe_diff, estimate_diff+moe_diff)
+
+      # add the row of z scores to the z score matrix
+      estimate_mat[, i] <- cell_values
+
+    }
+
+  } else if (format == 'binomial') {
+
+    # create vectors of counts and totals,
+    # leads to shorter code than refering to column names
+    success_c <- data_frame[[success]]
+    trials_c <- data_frame[[trials]]
+
+    # iterate through each row in the dataframe
+    for (i in 1:nrow(data_frame)) {
+
+      # conduct proportion test for between value at row in loop and all other valyes
+      cell_value <- sapply(1:nrow(data_frame),
+                            function(x) ff_proportions(c(success_c[i],success_c[x]),c(trials_c[i],trials_c[x])))
+
+      # add the row of z scores to the z score matrix
+      estimate_mat[, i] <- cell_value
+
+    }
+
+  } else {
+
+    stop("format value must be either 'continous' or 'binomial'.")
+
+  }
+
+  if (!is.null(var_names)) {
+
+    estimate_mat <- ff_create_varnames(data_frame, estimate_mat, var_names)
+
+  }
+
+  return(estimate_mat)
+
+}
+
+#' Difference and confidence interval of difference between two binomial observations
+#'
+#' This function calculates the percentile difference between two observations that
+#' are binomial (true / false, yes / no, etc) in nature. It also calculates the confidence
+#' interval of this difference. The function is used in `ff_estiamtes_ci`.
+#'
+#' @param success Vector of two numbers that represent the number of successes in each
+#'     of the observations.
+#' @param trials Vector of two numbers that represent the number of trials in each
+#'     of the observations
+ff_proportions <- function(successes, trials) {
+
+  # conduct prop test to create percentages for each variable
+  # and confidence interval of difference
+  pt <- prop.test(x = successes, n = trials)
+
+  # find difference in percentages
+  diff <- pt$estimate[[1]] - pt$estimate[[2]]
+
+  # paste together difference and confidence intervals
+  cell_values <- sprintf("%.2f, \n[%.2f, %.2f]", diff, pt$conf.int[[1]], pt$conf.int[[2]])
+
+  return(cell_values)
+
+}
 
 #' Pretty formatting of significance testing tables with Kable
 #'
@@ -223,4 +309,66 @@ ff_sigtest_kable <- function(sigtest_matrix, test = 'zscore',
                               full_width = F, position = "left", font_size = 10) %>%
     # bold row names
     kableExtra::column_spec(1, bold = T)
+}
+
+#' Create variable names for tables
+#'
+#' This function creates variable names for tables when `var_names = TRUE` in
+#' `ff_sigtest` and `ff_estimate_ci`. Users will not call this function, it will
+#' be called within `ff_sigtest` and `ff_estimate_ci`.
+#'
+#' @param data_frame A data frame used in the function to create the table.
+#' @param table_data The significance test or estimate table created by `ff_sigtest` or `ff_estimate_ci`.
+#' @param var_names The variable names used inthe function to create the table.
+#'
+#' @importFrom magrittr "%>%"
+ff_create_varnames <- function(data_frame, table_data, var_names) {
+
+  # if there is only one variable name, then use this as the label
+  # otherwise paste together variable names
+  if (length(var_names) == 1) {
+
+    # sometime isolating a column returns a data frame, and sometimes it returns a vector
+    # if a dataframe is returned, isolate first, and only, column as a vector
+    if (is.data.frame(unique(data_frame[ , var_names])) == TRUE) {
+
+      names_vec <- unique(data_frame[ , var_names])[[1]]
+
+    } else {
+
+      names_vec <- unique(data_frame[ , var_names])
+
+    }
+
+  } else {
+
+    # create vector of label names by pasting columns together
+    names_vec <- apply( data_frame[ , var_names], 1, paste, collapse = ": " )
+
+  }
+
+  # shorted names so they appear cleaner and shorter in the matrix as column and row headers
+
+  # replace any United States and North Carolina values with NC and US
+  names_vec <- stringr::str_replace_all(names_vec, 'United States', 'US') %>%
+    stringr::str_replace_all('North Carolina', 'NC') %>%
+    stringr::str_replace_all(' County, NC', '') %>%
+    # replace ethnicities with abbreviation
+    stringr::str_replace_all('African American', 'AA') %>%
+    stringr::str_replace_all('Hispanic/Latino', 'HL') %>%
+    stringr::str_replace_all('White, non-Hispanic', 'Wh') %>%
+    # shorten age descriptions (take off the word 'year')
+    stringr::str_replace_all(' years', '') %>%
+    stringr::str_replace_all(' and over', '+') %>%
+    # shorten age by converting 'to' to '-'
+    stringr::str_replace_all(' to ', '-') %>%
+    # remove word 'ratio;
+    stringr::str_replace_all(' ratio', '')
+
+  # add labels as column and row names
+  colnames(table_data) <- names_vec
+  row.names(table_data) <- names_vec
+
+  return(table_data)
+
 }
