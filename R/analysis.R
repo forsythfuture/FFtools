@@ -34,6 +34,8 @@
 #' # Chi-Square test
 #' ff_sigtest(data_frame = df, estimate = 'estimate', success = 'success', trials = 'trials',
 #'            test = 'chi-square', var_names = c('year', 'geo_description'))
+#' @export
+#' @importFrom magrittr "%>%"
 ff_sigtest <- function(data_frame, estimate, se, test = 'z',
                        success = NULL, trials = NULL, var_names = NULL) {
 
@@ -171,7 +173,8 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'z',
 #'            test = 'zscore', var_names = c('year', 'geo_description')) %>%
 #'            # Pipe significance testing matrix into function creating kable table
 #'            ff_sigtest_kable(sigtest_matrix = ., test = 'zscore', table_name = 'Example table')
-#'
+#' @export
+#' @importFrom magrittr "%>%"
 ff_sigtest_kable <- function(sigtest_matrix, test = 'zscore',
                              table_name = NULL) {
 
@@ -188,18 +191,18 @@ ff_sigtest_kable <- function(sigtest_matrix, test = 'zscore',
 
   sigtest_matrix %>%
     # bold any z score over 1.96
-    dplyr::mutate_all(funs(cell_spec(.,
-                              bold = ifelse(. > thresh,
-                                            if_true_bold,
-                                            if_false_bold)))) %>%
+    dplyr::mutate_all(dplyr::funs(kableExtra::cell_spec(.,
+                                                        bold = ifelse(. > thresh,
+                                                                      if_true_bold,
+                                                                      if_false_bold)))) %>%
     # add column names as the first row because row names do not print
     dplyr::mutate(Compare = colnames(.),
            # bold column of column / row names
-           Compare = cell_spec(Compare, bold = T)) %>%
+           Compare = kableExtra::cell_spec(Compare, bold = T)) %>%
     # only keep rows of Forsyth County
-    dplyr::filter(str_detect(Compare, 'Forsyth')) %>%
+    dplyr::filter(stringr::str_detect(Compare, 'Forsyth')) %>%
     # make the comparison column (column and row names) the first column
-    dplyr::select(Compare, everything()) %>%
+    dplyr::select(Compare, dplyr::everything()) %>%
     # create kable table
     knitr::kable(caption = table_name, escape = F)  %>%
     # add formating (every other row in gray)

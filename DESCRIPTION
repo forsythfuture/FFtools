@@ -16,5 +16,6 @@ Imports:
     stringr,
     knitr,
     kableExtra,
-    magrittr
+    magrittr,
+    methods
 RoxygenNote: 6.1.1

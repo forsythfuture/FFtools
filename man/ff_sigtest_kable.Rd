@@ -36,5 +36,4 @@ ff_sigtest(data_frame = df, estimate = 'estimate', se = 'se',
            test = 'zscore', var_names = c('year', 'geo_description')) \%>\%
            # Pipe significance testing matrix into function creating kable table
            ff_sigtest_kable(sigtest_matrix = ., test = 'zscore', table_name = 'Example table')
-
 }
