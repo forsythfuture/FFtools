@@ -121,7 +121,7 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'z',
 #' Matrix of estimates and confidence intervals
 #'
 #' This function returns a square symetrical matrix of all differences between all combinations of rows,
-#' along with the 95% confidence interval of the difference. For binomial (categorical) datasets, the difference is the
+#' along with the 95 percent confidence interval of the difference. For binomial (categorical) datasets, the difference is the
 #' percentile difference.
 #'
 #' @param data_frame A dataframe containing estimates and either standard errors for continous data
@@ -162,7 +162,7 @@ ff_estimates_ci <- function(data_frame, estimate, se, format,
 
   # This function takes as input a dataframe with estimates and standard errors,
   # or successes and trials; and calcualted the estimated difference between two
-  # point estimates as well as 95% CIs
+  # point estimates as well as 95 percent CIs
 
   # initialize an empty data frame with one column and the same number
   # of rows as the final dataframe

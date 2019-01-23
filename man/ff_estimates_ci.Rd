@@ -37,7 +37,7 @@ A square, symmetrical, with a length and width equal the number of rows in the d
 }
 \description{
 This function returns a square symetrical matrix of all differences between all combinations of rows,
-along with the 95% confidence interval of the difference. For binomial (categorical) datasets, the difference is the
+along with the 95 percent confidence interval of the difference. For binomial (categorical) datasets, the difference is the
 percentile difference.
 }
 \examples{
