@@ -9,15 +9,15 @@ ff_estimates_ci(data_frame, estimate, se, format, success = NULL,
   table_name = NULL)
 }
 \arguments{
-\item{data_frame}{A dataframe containing estimates and either standard errors for continous data
+\item{data_frame}{A dataframe containing estimates and either standard errors for continuous data
 or successes and trials for binomial data.}
 
-\item{estimate}{An integer or float containing the number to compare differences. Required for continous format.}
+\item{estimate}{An integer or float containing the number to compare differences. Required for continuous format.}
 
 \item{se}{Standard error of the estimate. Required for continuous format.}
 
-\item{format}{Type of data; either 'continous' or 'binomial'. If continous, the `estimate` columns is
-used to generate differences. If binomial, the `success` and `trials` columns are used. Default is continous.}
+\item{format}{Type of data; either 'continuous' or 'binomial'. If continuous, the `estimate` columns is
+used to generate differences. If binomial, the `success` and `trials` columns are used. Default is continuous.}
 
 \item{success}{The number of successful trials. Required for binomial format.}
 
@@ -43,11 +43,11 @@ percentile difference.
 }
 \examples{
 df <- data.frame(year = c(2016, 2016, 2017, 2017),
-geo_description = c('Forsyth County, NC', 'Guilford County, NC',
-                    'Forsyth County, NC', 'Guilford County, NC'),
-estimate = c(.66, .63, .88, .48),
-success = c(10, 12, 15, 19),
-trials = c(15, 19, 17, 39))
+                 geo_description = c('Forsyth County, NC', 'Guilford County, NC',
+                                     'Forsyth County, NC', 'Guilford County, NC'),
+                estimate = c(.66, .63, .88, .48),
+                success = c(10, 12, 15, 19),
+                trials = c(15, 19, 17, 39))
 
 # binomial data
 ff_estimates_ci(df, 'estimate', format = 'binomial',

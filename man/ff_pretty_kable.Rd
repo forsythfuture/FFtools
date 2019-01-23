@@ -4,7 +4,7 @@
 \alias{ff_pretty_kable}
 \title{Pretty formatting of significance testing nd estimate tables with Kable}
 \usage{
-ff_pretty_kable(data_matrix, table_type, format = "continous",
+ff_pretty_kable(data_matrix, table_type, format = "continuous",
   table_name = NULL)
 }
 \arguments{
@@ -14,7 +14,7 @@ ff_pretty_kable(data_matrix, table_type, format = "continous",
 `ff_sigtest` and has results from a significance test; or whether the table was generated
 by `ff_estimates_ci` and has estimates and confidence intervals.}
 
-\item{format}{Type of data; either 'continous' or 'binomial'. Defaults to 'continous'.}
+\item{format}{Type of data; either 'continuous' or 'binomial'. Defaults to 'continuous'.}
 
 \item{table_name}{A string of characters representing the table name. It is displayed above the table.
 Defautls to no table name.}
