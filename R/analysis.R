@@ -177,7 +177,7 @@ ff_estimates_ci <- function(data_frame, estimate, se, format,
       moe_diff <- sqrt( data_frame[[i, se]]^2 + data_frame[[se]]^2 ) * 1.96
 
       # create single cell that has estimate and CIs
-      cell_values <- sprintf("%.2f,\n[%.2f, %.2f]", estimate_diff, estimate_diff-moe_diff, estimate_diff+moe_diff)
+      cell_values <- sprintf("%.2f,[%.2f, %.2f]", estimate_diff, estimate_diff-moe_diff, estimate_diff+moe_diff)
 
       # add the row of z scores to the z score matrix
       estimate_mat[, i] <- cell_values
