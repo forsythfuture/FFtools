@@ -137,6 +137,9 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'zscore',
 #' @param pretty_print Boolean (TRUE / FALSE) indicating whether to return the table as a Kable HTML table that bolds
 #'     statistically significant finding and creates other stylistic changes. Default is FALSE.
 #' @param table_name Character string to use as the name of the Kable table. Only used if `pretty_print` is TRUE.
+#' @param rate_per_unit Integer used to calculate the rate per x number of people. For example, the crime rate
+#'     is the number of crimes per 100,000 people, so 100,000 would be entered. Defaults to 1, which is no adjustment.
+#'     Only used if format equals 'binomial'.
 #' @return A square, symmetrical, with a length and width equal the number of rows in the data frame.
 #'     Each cell in the matrix contains the difference in the estimate of the column minus the row. It
 #'     also contains the 95 percent confidence interval of the difference.
@@ -154,8 +157,8 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'zscore',
 #' @export
 #' @importFrom magrittr "%>%"
 ff_estimates_ci <- function(data_frame, estimate, se, format,
-                            success = NULL, trials = NULL, var_names = NULL,
-                            pretty_print = FALSE, table_name = NULL) {
+                            success = NULL, trials = NULL, rate_per_unit = 1,
+                            var_names = NULL, pretty_print = FALSE, table_name = NULL) {
 
   # This function takes as input a dataframe with estimates and standard errors,
   # or successes and trials; and calcualted the estimated difference between two
@@ -188,6 +191,8 @@ ff_estimates_ci <- function(data_frame, estimate, se, format,
 
     # create vectors of counts and totals,
     # leads to shorter code than refering to column names
+
+    # multiply successes by rate to convert to rate per x
     success_c <- data_frame[[success]]
     trials_c <- data_frame[[trials]]
 
@@ -196,7 +201,7 @@ ff_estimates_ci <- function(data_frame, estimate, se, format,
 
       # conduct proportion test for between value at row in loop and all other valyes
       cell_value <- sapply(1:nrow(data_frame),
-                            function(x) ff_proportions(c(success_c[i],success_c[x]),c(trials_c[i],trials_c[x])))
+                            function(x) ff_proportions(c(success_c[i],success_c[x]), c(trials_c[i],trials_c[x]), rate_per_unit))
 
       # add the row of z scores to the z score matrix
       estimate_mat[, i] <- cell_value
@@ -208,9 +213,7 @@ ff_estimates_ci <- function(data_frame, estimate, se, format,
   }
 
   if (!is.null(var_names)) {
-
     estimate_mat <- ff_create_varnames(data_frame, estimate_mat, var_names)
-
   }
 
   # create formatted Kable table if requested
@@ -236,18 +239,23 @@ ff_estimates_ci <- function(data_frame, estimate, se, format,
 #' @param success Vector of two numbers that represent the number of successes in each
 #'     of the observations.
 #' @param trials Vector of two numbers that represent the number of trials in each
-#'     of the observations
-ff_proportions <- function(successes, trials) {
+#'     of the observation
+#' @param rate_per_unit Integer used to calculate the rate per x number of people. For example, the crime rate
+#'     is the number of crimes per 100,000 people, so 100,000 would be entered. Defaults to 1, which is no adjustment.
+#'     Only used if format equals 'binomial'.
+#'
+ff_proportions <- function(successes, trials, rate_per_unit) {
 
   # conduct prop test to create percentages for each variable
   # and confidence interval of difference
   pt <- prop.test(x = successes, n = trials)
 
-  # find difference in percentages
-  diff <- pt$estimate[[1]] - pt$estimate[[2]]
+  # find difference in percentages and convert to rate if needed
+  diff <- (pt$estimate[[1]] - pt$estimate[[2]]) * rate_per_unit
 
   # paste together difference and confidence intervals
-  cell_values <- sprintf("%.2f, \n[%.2f, %.2f]", diff, pt$conf.int[[1]], pt$conf.int[[2]])
+  cell_values <- sprintf("%.2f, \n[%.2f, %.2f]",
+                         diff, pt$conf.int[[1]]*rate_per_unit, pt$conf.int[[2]]*rate_per_unit)
 
   return(cell_values)
 

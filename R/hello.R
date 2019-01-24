@@ -23,8 +23,8 @@ hello <- function() {
 #                  success = c(10, 12, 15, 19),
 #                  trials = c(15, 19, 17, 39))
 #
-#
-# ff_estimates_ci(df, 'estimate', format = 'binomial',
-#                 success = 'success', trials = 'trials', var_names = c('year', 'geo_description'),
-#                 pretty_print = TRUE)
+# read.csv('https://raw.githubusercontent.com/forsythfuture/indicators/master/shiny_datasets/infant_mortality.csv') %>%
+#     ff_estimates_ci(., 'estimate', format = 'binomial',
+#                     success = 'success', trials = 'trials', var_names = c('year', 'geo_description', 'subtype'),
+#                     pretty_print = FALSE, rate_per_unit = 1000)
 

@@ -4,11 +4,15 @@
 \alias{ff_proportions}
 \title{Difference and confidence interval of difference between two binomial observations}
 \usage{
-ff_proportions(successes, trials)
+ff_proportions(successes, trials, rate_per_unit)
 }
 \arguments{
 \item{trials}{Vector of two numbers that represent the number of trials in each
-of the observations}
+of the observation}
+
+\item{rate_per_unit}{Integer used to calculate the rate per x number of people. For example, the crime rate
+is the number of crimes per 100,000 people, so 100,000 would be entered. Defaults to 1, which is no adjustment.
+Only used if format equals 'binomial'.}
 
 \item{success}{Vector of two numbers that represent the number of successes in each
 of the observations.}

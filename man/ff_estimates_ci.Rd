@@ -5,8 +5,8 @@
 \title{Matrix of estimates and confidence intervals}
 \usage{
 ff_estimates_ci(data_frame, estimate, se, format, success = NULL,
-  trials = NULL, var_names = NULL, pretty_print = FALSE,
-  table_name = NULL)
+  trials = NULL, rate_per_unit = 1, var_names = NULL,
+  pretty_print = FALSE, table_name = NULL)
 }
 \arguments{
 \item{data_frame}{A dataframe containing estimates and either standard errors for continuous data
@@ -22,6 +22,10 @@ used to generate differences. If binomial, the `success` and `trials` columns ar
 \item{success}{The number of successful trials. Required for binomial format.}
 
 \item{trials}{The total number of trials. Required for binomial format.}
+
+\item{rate_per_unit}{Integer used to calculate the rate per x number of people. For example, the crime rate
+is the number of crimes per 100,000 people, so 100,000 would be entered. Defaults to 1, which is no adjustment.
+Only used if format equals 'binomial'.}
 
 \item{var_names}{A character vector of variables that can be combined to create
 distinct names for each row and column.}
