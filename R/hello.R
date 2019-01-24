@@ -12,9 +12,6 @@
 #   Build and Reload Package:  'Ctrl + Shift + B'
 #   Check Package:             'Ctrl + Shift + E'
 #   Test packages:             'Ctrl + Shift + T'
-hello <- function() {
-  print("Hello, world!")
-}
 #
 # df <- data.frame(year = c(2016, 2016, 2017, 2017),
 #                  geo_description = c('Forsyth County, NC', 'Guilford County, NC',
@@ -24,7 +21,7 @@ hello <- function() {
 #                  trials = c(15, 19, 17, 39))
 #
 # read.csv('https://raw.githubusercontent.com/forsythfuture/indicators/master/shiny_datasets/infant_mortality.csv') %>%
-#     ff_estimates_ci(., 'estimate', format = 'binomial',
-#                     success = 'success', trials = 'trials', var_names = c('year', 'geo_description', 'subtype'),
-#                     pretty_print = FALSE, rate_per_unit = 1000)
+#   ff_sigtest(., 'estimate', 'se', test = 'chi-square', success = 'success', trials = 'trials',
+#              var_names = c('year', 'geo_description', 'subtype'),
+#              pretty_print = TRUE)
 

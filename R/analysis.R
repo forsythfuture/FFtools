@@ -4,8 +4,9 @@
 #' values. It can calculate either a z-score or a p-value from a Chi-Square test of proportions.
 #' The matrix length and width equal the number of rows in the data frame.
 #'
-#' The z-score formula comes from: U.S. Census Bureau, A Compass for Understanding and Using ACS Survey Data, A-18
-#' The Chi-Square test of proportions uses `prop.test`
+#' The z-score formula comes from: U.S. Census Bureau, A Compass for Understanding and Using ACS Survey Data, A-18.
+#' The z-scores are then converted to p-values using the R function for generating cumulative PDFs: `pnorm(z_score, lower.tail=FALSE)*2`.
+#' The Chi-Square test of proportions uses `prop.test` and extracts the p-values from this function's results.
 #'
 #' @param data_frame A dataframe containing estimates and either standard errors for z-score test
 #'    or successes and trials for a Chi-Square test.
@@ -21,7 +22,8 @@
 #' @param table_name Character string to use as the name of the Kable table. Only used if `pretty_print` is TRUE.
 #' @return A square, symmetrical, with a length and width equal the number of rows in the data frame.
 #'     Each cell in the matrix contains the results of the significance test from the row in the original
-#'     dataframe represented by the column, and the row represented by the row in the matrix.
+#'     dataframe represented by the column, and the row represented by the row in the matrix. The cell values
+#'     signify the p-value of a two-sided test with a null-hypothesis of no difference between the observations.
 #' @examples
 #' df <- data.frame(year = c(2016, 2017),
 #'                  geo_description = c('Forsyth County, NC', 'Guilford County, NC'),
@@ -58,11 +60,14 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'zscore',
       estimate_diff <- data_frame[[i, estimate]] - data_frame[[estimate]]
       se_diff <- sqrt( data_frame[[i, se]]^2 + data_frame[[se]]^2 )
 
-      # calculate the z score for all row values, rounds to two decimals
-      z_score <- abs( estimate_diff / se_diff) %>% round(2)
+      # calculate the z score for all row values
+      z_score <- abs(estimate_diff / se_diff)
+      # convert z score to p-value; multiply by 2 to get two-sided test
+      # round to 3 digit places
+      p_value <- round( pnorm(z_score, lower.tail=FALSE)*2, 3)
 
       # add the row of z scores to the z score matrix
-      sigtest_mat[, i] <- z_score
+      sigtest_mat[, i] <- p_value
 
     }
 
@@ -293,23 +298,14 @@ ff_pretty_kable <- function(data_matrix, table_type, format = 'continuous',
       stop("format must be either 'continuous' or 'binomial'.")
     }
 
-    # for z-score we want to bold anything over 1.96,
-    # for chi-square, we want to bold anything under 0.05
-    # each of these values represent the significance threshold
-    thresh <- if (format == 'continuous') 1.96 else 0.05
+    # bold any p-values at 0.05 or lower, which signifies statistical significance.
+    thresh <- 0.05
 
-    # we want to bold numbers over threshold for z and under threshold for chi-square
-    # due to this difference, we must create TRUE and FALSE values of whether to bold
-    # depending on what test is used
-    if_true_bold <- if (format == 'continuous') T else F
-    if_false_bold <- if (format == 'continuous') F else T
-
+    # bold any cell less than or equal to significance threshold
     data_matrix <- data_matrix %>%
-      # bold any z score over 1.96
-      dplyr::mutate_all(dplyr::funs(kableExtra::cell_spec(.,
-                                                          bold = ifelse(. > thresh,
-                                                                        if_true_bold,
-                                                                        if_false_bold))))
+      dplyr::mutate_all(dplyr::funs(
+        kableExtra::cell_spec(., bold = ifelse(. <= thresh, T, F))))
+
   }
 
   data_matrix <- data_matrix %>%

@@ -33,7 +33,8 @@ statistically significant finding and creates other stylistic changes. Default i
 \value{
 A square, symmetrical, with a length and width equal the number of rows in the data frame.
     Each cell in the matrix contains the results of the significance test from the row in the original
-    dataframe represented by the column, and the row represented by the row in the matrix.
+    dataframe represented by the column, and the row represented by the row in the matrix. The cell values
+    signify the p-value of a two-sided test with a null-hypothesis of no difference between the observations.
 }
 \description{
 This function returns a square symetrical matrix of all significance tests for all combinations of
@@ -41,8 +42,9 @@ values. It can calculate either a z-score or a p-value from a Chi-Square test of
 The matrix length and width equal the number of rows in the data frame.
 }
 \details{
-The z-score formula comes from: U.S. Census Bureau, A Compass for Understanding and Using ACS Survey Data, A-18
-The Chi-Square test of proportions uses `prop.test`
+The z-score formula comes from: U.S. Census Bureau, A Compass for Understanding and Using ACS Survey Data, A-18.
+The z-scores are then converted to p-values using the R function for generating cumulative PDFs: `pnorm(z_score, lower.tail=FALSE)*2`.
+The Chi-Square test of proportions uses `prop.test` and extracts the p-values from this function's results.
 }
 \examples{
 df <- data.frame(year = c(2016, 2017),
