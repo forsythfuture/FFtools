@@ -38,11 +38,14 @@ A square, symmetrical, with a length and width equal the number of rows in the d
 }
 \description{
 This function returns a square symetrical matrix of all significance tests for all combinations of
-values. It can calculate either a z-score or a p-value from a Chi-Square test of proportions.
-The matrix length and width equal the number of rows in the data frame.
+values. It calcualtes the p-value from either the z test statistic or Chi-Square test statistic.
+A two-sided significance test is conducted and the null hypothesis is that there is no difference between the two
+parameters. The matrix length and width equal the number of rows in the data frame.
 }
 \details{
-The z-score formula comes from: U.S. Census Bureau, A Compass for Understanding and Using ACS Survey Data, A-18.
+The z-score formula comes from:
+U.S. Census Bureau, A Compass for Understanding and Using ACS Survey Data, A-18.
+
 The z-scores are then converted to p-values using the R function for generating cumulative PDFs: `pnorm(z_score, lower.tail=FALSE)*2`.
 The Chi-Square test of proportions uses `prop.test` and extracts the p-values from this function's results.
 }

@@ -50,6 +50,7 @@ df <- data.frame(year = c(2016, 2016, 2017, 2017),
                  geo_description = c('Forsyth County, NC', 'Guilford County, NC',
                                      'Forsyth County, NC', 'Guilford County, NC'),
                 estimate = c(.66, .63, .88, .48),
+                se = c(.1, .15, .06, .09),
                 success = c(10, 12, 15, 19),
                 trials = c(15, 19, 17, 39))
 

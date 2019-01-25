@@ -1,10 +1,13 @@
 #' Matrix of significance tests
 #'
 #' This function returns a square symetrical matrix of all significance tests for all combinations of
-#' values. It can calculate either a z-score or a p-value from a Chi-Square test of proportions.
-#' The matrix length and width equal the number of rows in the data frame.
+#' values. It calcualtes the p-value from either the z test statistic or Chi-Square test statistic.
+#' A two-sided significance test is conducted and the null hypothesis is that there is no difference between the two
+#' parameters. The matrix length and width equal the number of rows in the data frame.
 #'
-#' The z-score formula comes from: U.S. Census Bureau, A Compass for Understanding and Using ACS Survey Data, A-18.
+#' The z-score formula comes from:
+#' U.S. Census Bureau, A Compass for Understanding and Using ACS Survey Data, A-18.
+#'
 #' The z-scores are then converted to p-values using the R function for generating cumulative PDFs: `pnorm(z_score, lower.tail=FALSE)*2`.
 #' The Chi-Square test of proportions uses `prop.test` and extracts the p-values from this function's results.
 #'
@@ -64,7 +67,7 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'zscore',
       z_score <- abs(estimate_diff / se_diff)
       # convert z score to p-value; multiply by 2 to get two-sided test
       # round to 3 digit places
-      p_value <- round( pnorm(z_score, lower.tail=FALSE)*2, 3)
+      p_value <- round( stats::pnorm(z_score, lower.tail=FALSE)*2, 3)
 
       # add the row of z scores to the z score matrix
       sigtest_mat[, i] <- p_value
@@ -88,7 +91,7 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'zscore',
 
       # conduct proportion test for value at row in loop and all other valyes
       p_value <- sapply(1:nrow(data_frame),
-                        function(x) prop.test(c(success_c[i],success_c[x]),c(trials_c[i],trials_c[x]))$p.value)
+                        function(x) stats::prop.test(c(success_c[i],success_c[x]),c(trials_c[i],trials_c[x]))$p.value)
 
       # add the row of z scores to the z score matrix
       sigtest_mat[, i] <- round(p_value, 3)
@@ -153,6 +156,7 @@ ff_sigtest <- function(data_frame, estimate, se, test = 'zscore',
 #'                  geo_description = c('Forsyth County, NC', 'Guilford County, NC',
 #'                                      'Forsyth County, NC', 'Guilford County, NC'),
 #'                 estimate = c(.66, .63, .88, .48),
+#'                 se = c(.1, .15, .06, .09),
 #'                 success = c(10, 12, 15, 19),
 #'                 trials = c(15, 19, 17, 39))
 #'
@@ -241,7 +245,7 @@ ff_estimates_ci <- function(data_frame, estimate, se, format,
 #' are binomial (true / false, yes / no, etc) in nature. It also calculates the confidence
 #' interval of this difference. The function is used in `ff_estiamtes_ci`.
 #'
-#' @param success Vector of two numbers that represent the number of successes in each
+#' @param successes Vector of two numbers that represent the number of successes in each
 #'     of the observations.
 #' @param trials Vector of two numbers that represent the number of trials in each
 #'     of the observation
@@ -253,7 +257,7 @@ ff_proportions <- function(successes, trials, rate_per_unit) {
 
   # conduct prop test to create percentages for each variable
   # and confidence interval of difference
-  pt <- prop.test(x = successes, n = trials)
+  pt <- stats::prop.test(x = successes, n = trials)
 
   # find difference in percentages and convert to rate if needed
   diff <- (pt$estimate[[1]] - pt$estimate[[2]]) * rate_per_unit
@@ -310,13 +314,13 @@ ff_pretty_kable <- function(data_matrix, table_type, format = 'continuous',
 
   data_matrix <- data_matrix %>%
     # add column names as the first row because row names do not print
-    dplyr::mutate(Compare = colnames(.),
+    dplyr::mutate(compare_cols = colnames(.),
            # bold column of column / row names
-           Compare = kableExtra::cell_spec(Compare, bold = T)) %>%
+           compare_cols = kableExtra::cell_spec(compare_cols, bold = T)) %>%
     # only keep rows of Forsyth County
-    dplyr::filter(stringr::str_detect(Compare, 'Forsyth')) %>%
+    dplyr::filter(stringr::str_detect(compare_cols, 'Forsyth')) %>%
     # make the comparison column (column and row names) the first column
-    dplyr::select(Compare, dplyr::everything()) %>%
+    dplyr::select(compare_cols, dplyr::everything()) %>%
     # create kable table
     knitr::kable(caption = table_name, escape = F)  %>%
     # add formating (every other row in gray)
@@ -388,5 +392,57 @@ ff_create_varnames <- function(data_frame, table_data, var_names) {
   row.names(table_data) <- names_vec
 
   return(table_data)
+
+}
+
+#' Plot of p-values
+#'
+#' This function returns a plot similair to a correlation plot, highlighting whether p-values are significant.
+#' THe function takes as input a table of p-values created by `ff_sigtest`. In using `ff_sigtest` to create a plot
+#' with this function, the `pretty_print` parameter msut be set to false.
+#'
+#' @param pvalue_matrix A table of p-values generated from `ff_sigtest`.
+#' @return A ggplot graphic that is color coded based on teh p-value.
+#' @examples
+#' df <- data.frame(year = c(2016, 2016, 2017, 2017),
+#'                  geo_description = c('Forsyth County, NC', 'Guilford County, NC',
+#'                                      'Forsyth County, NC', 'Guilford County, NC'),
+#'                 estimate = c(.66, .63, .88, .48),
+#'                 se = c(.1, .15, .06, .09),
+#'                 success = c(10, 12, 15, 19),
+#'                 trials = c(15, 19, 17, 39))
+#'
+#' # create table of p-values
+#' pvalues <- ff_sigtest(data_frame = df, estimate = 'estimate', se = 'se',
+#'                       test = 'zscore', var_names = c('year', 'geo_description'))
+#'
+#' # generate plot
+#' ff_p_plot(pvalues)
+#'
+#' @export
+#' @importFrom magrittr "%>%"
+ff_p_plot <- function(pvalue_matrix) {
+
+  # identify column names of first and last columns, so they can be used to gather data
+  first <- names(pvalue_matrix[1])
+  last <- names(pvalue_matrix[ncol(pvalue_matrix)])
+
+  # add column of row names to matrix
+  pvalue_matrix$row_names <- row.names(pvalue_matrix)
+
+  # gather values to create long form data set
+  pvalue_matrix %>% tidyr::gather(first:last, key = 'var1', value = 'value') %>%
+    # plot
+    ggplot2::ggplot(ggplot2::aes(row_names, var1, fill = value))+
+    ggplot2::geom_tile(color = "white")+
+    ggplot2::scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+                         midpoint = 0.05, space = "Lab",
+                         name="P-value Matrix\nBlue > 0.05\nRed > 0.05") +
+    ggplot2::labs(title = 'Statistically significant P-values are in red',
+         x = '', y = '') +
+    ggplot2::theme_minimal()+
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 1,
+                                     size = 12, hjust = 1)) +
+    ggplot2::coord_fixed()
 
 }

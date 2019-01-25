@@ -7,7 +7,7 @@ Maintainer: Shane Orr <shane@forsythfutures.com>
 Description: Forsyth Futures routinely works with common datasets such as American Community Survey (ACS) tables
     and the ACS Public Use Microdata Sample (PUMS). We also perform repeat operations on datasets, such as adjusting
     for inflation. This package bundles common functions and commands.
-License: What license is it under?
+License: CC0
 Encoding: UTF-8
 LazyData: true
 Imports: 
@@ -17,5 +17,7 @@ Imports:
     knitr,
     kableExtra,
     magrittr,
+    lubridate,
+    ggplot2,
     methods
 RoxygenNote: 6.1.1
