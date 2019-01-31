@@ -9,7 +9,7 @@ cw <- read_csv('data-raw/puma_counties_cw.csv') %>%
   select(county, cntyname) %>%
   # county FIPS codes have state and county numbers;
   # extract last two numbers, which represent county numbers
-  mutate(county = as.integer(str_extract(county, '[0-9]{2}$')),
+  mutate(county = as.integer(str_extract(county, '[0-9]{3}$')),
          # county names do not have a comma between county name and NC
          # and do not include words 'county'; add these back
          cntyname = str_replace(cntyname, " NC$", " County, NC")) %>%
