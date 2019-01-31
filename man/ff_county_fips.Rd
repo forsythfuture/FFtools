@@ -7,7 +7,7 @@
 ff_county_fips(county_fips_codes)
 }
 \arguments{
-\item{county_fips}{NC county FIPS codes.}
+\item{county_fips_codes}{NC county FIPS codes.}
 }
 \value{
 The county name as a string corresponding to the county FIPS code.
@@ -22,8 +22,7 @@ df <- data.frame(county_fips_code = c(1, 3, 67),
 
 ff_county_fips(df$county_fips_code)
 
-# Using pipes to add county FIPS names as a new column to dataframe
-df \%>\%
-    mutate(county_name = ff_county_fips(.$county_fips_code))
+# Directly adding county names as a column
+dplyr::mutate(df, county_name = ff_county_fips(df$county_fips_code))
 
 }
