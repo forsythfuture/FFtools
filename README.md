@@ -51,6 +51,7 @@ ff_sigtest(data_frame = df, estimate = 'estimate', se = 'se',
 ff_sigtest(data_frame = df, estimate = 'estimate', success = 'success', trials = 'trials',
            test = 'chi-square', var_names = c('year', 'geo_description'))
 ```
+
 #### Matrix of estimates and confidence intervals
 
 `ff_estimates_ci`
