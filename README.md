@@ -35,7 +35,7 @@ The Chi-Square test of proportions uses `prop.test` and extracts the p-values fr
 
 **Example**
 
-````r
+```r
 df <- data.frame(year = c(2016, 2017),
                 geo_description = c('Forsyth County, NC', 'Guilford County, NC'),
                 estimate = c(1,2),
@@ -71,7 +71,8 @@ This function returns a square symetrical matrix of all differences between all 
 * `rate_per_unit` Integer used to calculate the rate per x number of people. For example, the crime rate is the number of crimes per 100,000 people, so 100,000 would be entered. Defaults to 1, which is no adjustment. Only used if format equals 'binomial'.
 
 **Example**
-````r
+
+```r
 df <- data.frame(year = c(2016, 2016, 2017, 2017),
                  geo_description = c('Forsyth County, NC', 'Guilford County, NC',
                                      'Forsyth County, NC', 'Guilford County, NC'),
@@ -97,7 +98,8 @@ This function performs a cross-walk between county names and county FIPS codes. 
 * `county_fips_codes` NC county FIPS codes
 
 **Example:**
-````r
+
+```r
 df <- data.frame(county_fips_code = c(1, 3, 67),
                  estimate = c(121, 156, 190))
                  
