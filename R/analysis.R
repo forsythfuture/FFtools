@@ -13,11 +13,11 @@
 #'
 #' @param data_frame A dataframe containing estimates and either standard errors for z-score test
 #'    or successes and trials for a Chi-Square test.
-#' @param estimate An integer or float containing the number to conduct significance tests on.
-#' @param se Standard error of the estimate. Required if test a z-score test
+#' @param estimate The column name of the number to conduct significance tests on.
+#' @param se The column name of the standard error of the estimate. Required if test a z-score test
 #' @param test The significance test to conduct. Either "zscore" or "chi-square". Defaults to 'zscore'.
-#' @param success The number of successful trials. Required for Chi-Square test.
-#' @param trials The total number of trials. Required for Chi-Square test.
+#' @param success The column name of the number of successful trials. Required for Chi-Square test.
+#' @param trials The column name of the total number of trials. Required for Chi-Square test.
 #' @param var_names A character vector of variables that can be combined to create
 #'     distinct names for each row and column.
 #' @param pretty_print Boolean (TRUE / FALSE) indicating whether to return the table as a Kable HTML table that bolds

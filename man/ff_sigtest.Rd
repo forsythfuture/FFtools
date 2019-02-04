@@ -12,15 +12,15 @@ ff_sigtest(data_frame, estimate, se, test = "zscore", success = NULL,
 \item{data_frame}{A dataframe containing estimates and either standard errors for z-score test
 or successes and trials for a Chi-Square test.}
 
-\item{estimate}{An integer or float containing the number to conduct significance tests on.}
+\item{estimate}{The column name of the number to conduct significance tests on.}
 
-\item{se}{Standard error of the estimate. Required if test a z-score test}
+\item{se}{The column name of the standard error of the estimate. Required if test a z-score test}
 
 \item{test}{The significance test to conduct. Either "zscore" or "chi-square". Defaults to 'zscore'.}
 
-\item{success}{The number of successful trials. Required for Chi-Square test.}
+\item{success}{The column name of the number of successful trials. Required for Chi-Square test.}
 
-\item{trials}{The total number of trials. Required for Chi-Square test.}
+\item{trials}{The column name of the total number of trials. Required for Chi-Square test.}
 
 \item{var_names}{A character vector of variables that can be combined to create
 distinct names for each row and column.}
