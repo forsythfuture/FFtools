@@ -318,7 +318,7 @@ ff_pretty_kable <- function(data_matrix, table_type, format = 'continuous',
            # bold column of column / row names
            compare_cols = kableExtra::cell_spec(compare_cols, bold = T)) %>%
     # only keep rows of Forsyth County
-    dplyr::filter(stringr::str_detect(compare_cols, 'Forsyth')) %>%
+    #dplyr::filter(stringr::str_detect(compare_cols, 'Forsyth')) %>%
     # make the comparison column (column and row names) the first column
     dplyr::select(compare_cols, dplyr::everything()) %>%
     # create kable table
