@@ -18,3 +18,7 @@ Same dataframe as input, but only the rows with the needed variables are include
 ACS variables are three digit numbers shown as the last three digits in the 'variables' column.
 The function filters a dataframe of ACS data for specified variables.
 }
+\examples{
+ff_acs_keep_vars(df, c('100', '101'))
+
+}

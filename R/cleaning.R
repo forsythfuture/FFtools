@@ -1,9 +1,9 @@
 #' Filter for race / ethnicity rows in ACS data
 #'
-#'   This function filters for the following ethnicities in ACS data:
+#' This function filters for the following ethnicities in ACS data:
 #'      White Alone, Not Hispanic or Latino; Black or African American Alone; Hispanic or Latino
 #'
-#'   It also cleans the race / ethnicity name to match FF standards.
+#' It also cleans the race / ethnicity name to match FF standards.
 #'
 #' @param df Dataframe of ACS data
 #' @param ethnicity_column Column name that contains race / ethnicity phrase
@@ -43,6 +43,46 @@ ff_acs_ethnicity <- function(df, ethnicity_column) {
 
 }
 
+#' Filter for age rows in ACS data and rebin ages if needed
+#'
+#' This function filters ACS data for rows that include ages.  It also has optional
+#' parameters to rebin age groups into custom age bins.
+#'
+#' @param df Dataframe of ACS data
+#' @param age_column Column name that contains age information
+#' @param recode Boolean value of whether to recode age bins
+#' @param recode_list A named list where name is old age bin and value is a string for the new age bin
+#'
+#' @return Dataframe that only contains the age rows
+#' @examples
+#' age_bins <- list(`16 to 26 year old` = "16 to 25",
+#'                  `75 and over` = "over 75")
+#' ff_acs_age(df, description, recode = T, recode_list = age_bins)
+#'
+#' @export
+#' @importFrom magrittr "%>%"
+ff_acs_age <- function(df, age_column, recode = F, recode_list = NULL) {
+
+  age_column <- rlang::enquo(age_column)
+
+  df <- df %>%
+    # only keep age variable
+    dplyr::filter(stringr::str_detect(!! age_column, ' AGE - ')) %>%
+    # create new variable that is only the age
+    dplyr::mutate(age = stringr::str_extract(!! age_column, 'AGE - .* years'),
+                  age = stringr::str_extract(age, '[0-9].*'))
+
+  # recode age variables if required
+  if (recode == T) {
+
+    df <- df %>%
+      mutate(age = dplyr::recode(.data$age, !!! recode_list))
+  }
+
+  return(df)
+
+}
+
 #' Filter ACS data for specific variables
 #'
 #' ACS variables are three digit numbers shown as the last three digits in the 'variables' column.
@@ -51,7 +91,7 @@ ff_acs_ethnicity <- function(df, ethnicity_column) {
 #' @param df Dataframe of ACS data
 #' @param variables Vector of strings signifying variable numbers
 #' @return Same dataframe as input, but only the rows with the needed variables are included.
-#' @example
+#' @examples
 #' ff_acs_keep_vars(df, c('100', '101'))
 #'
 #' @export
