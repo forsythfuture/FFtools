@@ -19,5 +19,7 @@ Imports:
     magrittr,
     lubridate,
     ggplot2,
+    rlang,
+    tidycensus,
     methods
 RoxygenNote: 6.1.1
