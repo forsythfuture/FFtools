@@ -2,7 +2,7 @@
 #'
 #' This function is used in 'iterate_acs'.
 #' It simply imports data from a single call to the census API through the tidycensus package.
-single_acs <- function(geography, state, county, table, variables, year,
+ff_single_acs <- function(geography, state, county, table, variables, year,
                         survey, use_table = T) {
 
   if (use_table == T) {
@@ -55,10 +55,10 @@ single_acs <- function(geography, state, county, table, variables, year,
 #'
 #' @export
 #' @importFrom magrittr "%>%"
-iterate_acs <- function(parameters_list, variable_names = NULL) {
+ff_iterate_acs <- function(parameters_list, variable_names = NULL) {
 
   # iterate through acs api calls
-  acs <- purr::pmap(parameters_list, single_acs) %>%
+  acs <- purr::pmap(parameters_list, ff_single_acs) %>%
     dplyr::bind_rows()
 
   # if a dataframe of variable names is supplied, add them to the dataset
