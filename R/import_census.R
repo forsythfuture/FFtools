@@ -58,7 +58,7 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
 ff_iterate_acs <- function(parameters_list, variable_names = NULL) {
 
   # iterate through acs api calls
-  acs <- purr::pmap(parameters_list, ff_single_acs) %>%
+  acs <- purrr::pmap(parameters_list, ff_single_acs) %>%
     dplyr::bind_rows()
 
   # if a dataframe of variable names is supplied, add them to the dataset
