@@ -13,7 +13,8 @@ tidycensus.  The name of each item should correspond to the parameter name in ge
 \item{variable_names}{A dataframe that contains the variable names.  Default is NULL.}
 }
 \value{
-A tidy dataframe with all census data.
+A tidy dataframe with all census data.  Additional columns for the yar and geographic
+region are added.
 }
 \description{
 This function makes repeated calls to the Census API through the tidycensus package.

@@ -12,7 +12,9 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
                         county = if (is.na(county)) NULL else county,
                         table = table,
                         year = year,
-                        survey = survey)
+                        survey = survey) %>%
+      dplyr::mutate(year = year,
+                    geography = geography)
 
   } else if (use_table == F) {
 
@@ -21,7 +23,9 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
                         county = if (is.na(county)) NULL else county,
                         variables = variables,
                         year = year,
-                        survey = survey)
+                        survey = survey) %>%
+      dplyr::mutate(year = year,
+                    geography = geography)
 
   } else {
 
@@ -39,7 +43,8 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
 #' @param parameters_list A named list of parameters to feed into the get_acs function from
 #'   tidycensus.  The name of each item should correspond to the parameter name in get_acs.
 #' @param variable_names A dataframe that contains the variable names.  Default is NULL.
-#' @return A tidy dataframe with all census data.
+#' @return A tidy dataframe with all census data.  Additional columns for the yar and geographic
+#' region are added.
 #' @examples
 #' parameters <- list(geography = c('us', 'state', 'county', 'tract'),
 #'                    state = c(NA, rep('NC', 3)),
@@ -68,6 +73,13 @@ ff_iterate_acs <- function(parameters_list, variable_names = NULL) {
       dplyr::left_join(variable_names, by = c('variable' = 'name'))
 
   }
+
+  acs <- acs %>%
+    # calculate standard error from 90% confidence interval
+    dplyr::mutate(se = moe / 1.645) %>%
+    # rename columns to match standards
+    dplyr::rename(geo_description = NAME, description = label) %>%
+    dplyr::select(-GEOID, -variable, -moe)
 
   return(acs)
 

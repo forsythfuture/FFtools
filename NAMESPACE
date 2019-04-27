@@ -2,6 +2,7 @@
 
 export(ff_acs_age)
 export(ff_acs_ethnicity)
+export(ff_acs_filter)
 export(ff_acs_keep_vars)
 export(ff_county_fips)
 export(ff_estimates_ci)
@@ -13,4 +14,5 @@ export(ff_se_prod)
 export(ff_se_prop)
 export(ff_se_ratio)
 export(ff_sigtest)
+export(ff_spread_dual)
 importFrom(magrittr,"%>%")

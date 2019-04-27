@@ -1,3 +1,111 @@
+#' Filter rows in ACS data based on column text describing the row
+#'
+#' With this functino, users can imput a regular expression and column with descriptive
+#' text, and the dataset will be filtered based on the regualr expression.
+#'
+#' Users can also extract a section of the regular expression, and place this phrase
+#' into a different  column titled `subtype`.  Finally users can recode the newly
+#' created `subtype` column by enting a named list of values.
+#'
+#' @param df Dataframe of ACS data
+#' @param filter_column Column name that contains descriptive text to filter for,
+#' entered as object
+#' @param filter_re Regular expression used to filter on
+#' @param subtype_re Regular expression to further extract words from `filter_re` and
+#' place in a new column called `subtype`
+#' @param recode Boolean indicating whether to recode the newly created `subtype` column
+#' @param recode_list A named list mapping the recode values
+#' @return A dataframe only containing the filtered rows; and an additiona lcolumn called `subtype` if
+#' `recode = T`.
+#' @examples
+#' age_bins <- list(`16 to 26 year old` = "16 to 25",
+#'                  `75 and over` = "over 75")
+#'
+#' ff_acs_filter(employment, description, "AGE -", "[0-9].*",
+#                recode = T, recode_list = age_bins)
+#'
+#' @export
+#' @importFrom magrittr "%>%"
+ff_acs_filter <- function(df, filter_column, filter_re, subtype_re = NULL,
+                          recode = F, recode_list = NULL) {
+
+  filter_column <- rlang::enquo(filter_column)
+
+  df <- df %>%
+    # filter based on the filtering regular expression
+    dplyr::filter(stringr::str_detect(!! filter_column, filter_re))
+
+  # if there is a subtype regular expression, extract this phrase from the filter columns
+  if (!is.null(subtype_re)) {
+
+    df <- df %>%
+      dplyr::mutate(subtype = stringr::str_extract(!! filter_column, subtype_re))
+
+  }
+
+  # recode variables if required
+  if (recode == T) {
+
+    df <- df %>%
+      dplyr::mutate(subtype = dplyr::recode(rlang::.data$subtype, !!! recode_list))
+  }
+
+  return(df)
+
+}
+
+#' Intermediate function used in `ff_spread_dual`.  It spreads an individual value,
+#' and then `ff_spread_dual` spreads two individual values using this function, and
+#' combines the two datasets produced from spreading the two individual values.
+ff_spread_single <- function(df, key, value_a, value_b, join_cols) {
+
+  df <- df %>%
+    dplyr::select(join_cols, key, value_a) %>%
+    tidyr::spread(key = key, value = value_a)
+
+  # rename columns so that when the datasets are merged we know
+  # what the column names mean
+  colnames(df) <- c(join_cols,
+                    stringr::str_c(value_a, '_a'),
+                    stringr::str_c(value_a, '_b'))
+
+  return(df)
+
+}
+
+#' Spread columns when there are two value columns that need to be retained.
+#'
+#' The `spread` function only takes one value column.  But, we often need to spread a dataset
+#' into wide-form, but with two value columns.  A example is when we want to spread a dataset,
+#' but keep the estimate and standard error columns.  This function allows users to spread
+#' a dataset and keep two value columns.
+
+#' @param df Dataframe of ACS data
+#' @param key Key column in dataframe as string (the column with the information we want to spread on)
+#' @param value_a First value column we want to keep as string
+#' @param value_b Second value column we want to keep as string
+#' @param join_cols Each value column is spread individually, and then both new spread datasets are joined.
+#' `join_cols` signifies which column to join the to datasets on.
+#' @return A dataframe with seperate columns for each of the values spread on, and value_a and value_b.
+#' The final dataframe will contain all the join columns and value columns totaling the number of items
+#' to spread on times two (two different values that are kept when spreading).
+#' @examples
+#' ff_spread_dual(total, 'description', 'estimate', 'se', c('geo_description', 'year'))
+#'
+#' @export
+#' @importFrom magrittr "%>%"
+ff_spread_dual <- function(df, key, value_a, value_b, join_cols) {
+
+  spread_a <- ff_spread_single(df, key, value_a, value_b, join_cols)
+  spread_b <- ff_spread_single(df, key, value_b, value_a, join_cols)
+
+  spread_full <- dplyr::full_join(spread_a, spread_b, by = join_cols)
+
+  return(spread_full)
+
+}
+
+
 #' Filter for race / ethnicity rows in ACS data
 #'
 #' This function filters for the following ethnicities in ACS data:

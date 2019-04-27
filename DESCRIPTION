@@ -21,5 +21,6 @@ Imports:
     ggplot2,
     rlang,
     tidycensus,
+    purrr,
     methods
 RoxygenNote: 6.1.1
