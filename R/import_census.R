@@ -84,3 +84,20 @@ ff_iterate_acs <- function(parameters_list, variable_names = NULL) {
   return(acs)
 
 }
+
+ff_all_year_acs <- function(subject, year, table, variable_names = NULL) {
+
+  parameters <- list(geography = c('us', 'state', 'county'),
+                     state = c(NA, rep('NC', 2)),
+                     county = c(rep(NA, 3)),
+                     table = rep(if (table == T) subject else NA, 3),
+                     variables = rep(if (table == F) subject else NA, 3),
+                     survey = rep('acs1', 3),
+                     year = rep(year, 3),
+                     use_table = rep(table, 3))
+
+  df <- ff_iterate_acs(parameters, variable_names)
+
+  return(df)
+
+}
