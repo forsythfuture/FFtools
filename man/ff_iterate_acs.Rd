@@ -2,7 +2,7 @@
 % Please edit documentation in R/import_census.R
 \name{ff_iterate_acs}
 \alias{ff_iterate_acs}
-\title{Iteartively import ACS data}
+\title{Iteratively import ACS data}
 \usage{
 ff_iterate_acs(parameters_list, variable_names = NULL)
 }

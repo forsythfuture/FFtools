@@ -35,7 +35,7 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
 
 }
 
-#' Iteartively import ACS data
+#' Iteratively import ACS data
 #'
 #' This function makes repeated calls to the Census API through the tidycensus package.
 #' It allows users to import multiple years and geographic areas with one function call.
