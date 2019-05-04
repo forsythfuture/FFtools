@@ -21,5 +21,11 @@ cw <- read_csv('data-raw/puma_counties_cw.csv') %>%
 # create dataset of acs variablenames
 acs_variables <- read_csv('data-raw/acs_variable_names.csv')
 
+# create lookup table of ACS variables
+tables <- load_variables(2017, "acs1", cache = TRUE)
+subject <- load_variables(2017, "acs1/subject", cache = TRUE)
+acs_lookup <- bind_rows(tables, subject)
+
 # write out dataset
-usethis::use_data(cw, acs_variables, internal = TRUE, overwrite = TRUE)
+usethis::use_data(cw, acs_variables, acs_lookup,
+                  internal = TRUE, overwrite = TRUE)

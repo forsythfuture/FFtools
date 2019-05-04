@@ -27,7 +27,7 @@ A dataframe only containing the filtered rows; and an additiona lcolumn called `
 `recode = T`.
 }
 \description{
-With this functino, users can imput a regular expression and column with descriptive
+With this function, users can imput a regular expression and column with descriptive
 text, and the dataset will be filtered based on the regualr expression.
 }
 \details{

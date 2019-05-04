@@ -1,6 +1,6 @@
 #' Filter rows in ACS data based on column text describing the row
 #'
-#' With this functino, users can imput a regular expression and column with descriptive
+#' With this function, users can imput a regular expression and column with descriptive
 #' text, and the dataset will be filtered based on the regualr expression.
 #'
 #' Users can also extract a section of the regular expression, and place this phrase
@@ -141,11 +141,12 @@ ff_acs_ethnicity <- function(df, ethnicity_column) {
     # !! signifies that the column name is stored in an object, and is not a column in the dataframe
     dplyr::filter(stringr::str_detect(!! ethnicity_column, re_ethnicities)) %>%
     # create new column that is only the name of the ethnicity
-    dplyr::mutate(ethnicity = stringr::str_extract(!! ethnicity_column, re_ethnicities)) %>%
+    dplyr::mutate(subtype = stringr::str_extract(!! ethnicity_column, re_ethnicities)) %>%
     # convert ethnicity names to Forsyth Futures conventions
-    dplyr::mutate(ethnicity = ifelse(.$ethnicity == 'Black or African American', 'African American',
-                                ifelse(.$ethnicity == 'Hispanic or Latino origin', 'Hispanic/Latino',
-                                   ifelse(.$ethnicity == 'White alone, not Hispanic or Latino', 'White, non-Hispanic', 'Not sure'))))
+    dplyr::mutate(subtype = ifelse(.$subtype == 'Black or African American', 'African American',
+                                ifelse(.$subtype == 'Hispanic or Latino origin', 'Hispanic/Latino',
+                                   ifelse(.$subtype == 'White alone, not Hispanic or Latino', 'White, non-Hispanic', 'Not sure'))),
+                  type = 'Ethnicity')
 
   return(df)
 
@@ -175,16 +176,17 @@ ff_acs_age <- function(df, age_column, recode = F, recode_list = NULL) {
 
   df <- df %>%
     # only keep age variable
-    dplyr::filter(stringr::str_detect(!! age_column, ' AGE - ')) %>%
+    dplyr::filter(stringr::str_detect(!! age_column, 'AGE')) %>%
     # create new variable that is only the age
-    dplyr::mutate(age = stringr::str_extract(!! age_column, 'AGE - .* years'),
-                  age = stringr::str_extract(age, '[0-9].*'))
+    dplyr::mutate(subtype = stringr::str_extract(!! age_column, 'AGE.*'),
+                  subtype = stringr::str_extract(subtype, '[0-9].*'),
+                  type = 'Age')
 
   # recode age variables if required
   if (recode == T) {
 
     df <- df %>%
-      dplyr::mutate(age = dplyr::recode(rlang::.data$age, !!! recode_list))
+      dplyr::mutate(subtype = dplyr::recode(rlang::.data$subtype, !!! recode_list))
   }
 
   return(df)

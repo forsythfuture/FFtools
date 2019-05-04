@@ -4,13 +4,11 @@
 \alias{ff_iterate_acs}
 \title{Iteratively import ACS data}
 \usage{
-ff_iterate_acs(parameters_list, variable_names = NULL)
+ff_iterate_acs(parameters_list)
 }
 \arguments{
 \item{parameters_list}{A named list of parameters to feed into the get_acs function from
 tidycensus.  The name of each item should correspond to the parameter name in get_acs.}
-
-\item{variable_names}{A dataframe that contains the variable names.  Default is NULL.}
 }
 \value{
 A tidy dataframe with all census data.  Additional columns for the yar and geographic
@@ -30,7 +28,6 @@ parameters <- list(geography = c('us', 'state', 'county', 'tract'),
                    year = rep(current_year, 4),
                    use_table = c(rep(T, 3), F))
 
-variable_descriptions <- load_variables(2017, "acs1", cache = TRUE)
-employment <- iterate_acs(parameters, variable_descriptions)
+employment <- ff_iterate_acs(parameters)
 
 }

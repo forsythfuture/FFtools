@@ -42,7 +42,6 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
 #'
 #' @param parameters_list A named list of parameters to feed into the get_acs function from
 #'   tidycensus.  The name of each item should correspond to the parameter name in get_acs.
-#' @param variable_names A dataframe that contains the variable names.  Default is NULL.
 #' @return A tidy dataframe with all census data.  Additional columns for the yar and geographic
 #' region are added.
 #' @examples
@@ -55,26 +54,16 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
 #'                    year = rep(current_year, 4),
 #'                    use_table = c(rep(T, 3), F))
 #'
-#' variable_descriptions <- load_variables(2017, "acs1", cache = TRUE)
-#' employment <- iterate_acs(parameters, variable_descriptions)
+#' employment <- ff_iterate_acs(parameters)
 #'
 #' @export
 #' @importFrom magrittr "%>%"
-ff_iterate_acs <- function(parameters_list, variable_names = NULL) {
+ff_iterate_acs <- function(parameters_list) {
 
   # iterate through acs api calls
   acs <- purrr::pmap(parameters_list, ff_single_acs) %>%
-    dplyr::bind_rows()
-
-  # if a dataframe of variable names is supplied, add them to the dataset
-  if (!is.null(variable_names)) {
-
-    acs <- acs %>%
-      dplyr::left_join(variable_names, by = c('variable' = 'name'))
-
-  }
-
-  acs <- acs %>%
+    dplyr::bind_rows() %>%
+    dplyr::left_join(acs_lookup, by = c('variable' = 'name')) %>%
     # calculate standard error from 90% confidence interval
     dplyr::mutate(se = moe / 1.645) %>%
     # rename columns to match standards
@@ -85,7 +74,25 @@ ff_iterate_acs <- function(parameters_list, variable_names = NULL) {
 
 }
 
-ff_all_year_acs <- function(subject, year, table, variable_names = NULL) {
+#' Import ACS data for a single year and topic
+#'
+#' This function imports ACS data for a single topic and year, and for the following
+#' geographic regions: United States, North Carolina, and all North Carolina counties.
+#' Its use case is to update the indicators.
+#'
+#' @param subject table or variable name as a string
+#' @param year The year to improt data.
+#' @param table Boolean indicating whether `subject` is a table or variable.
+#' `table = T` indicates that `subject` is a table
+#' @return A tidy dataframe with all census data.  Additional columns for the year and geographic
+#' region are added. Geographic regions include US, NC, and all NC counties for the given year.
+#' @examples
+#'
+#' employment <- ff_all_year_acs('S2301', 2017, T)
+#'
+#' @export
+#' @importFrom magrittr "%>%"
+ff_all_year_acs <- function(subject, year, table) {
 
   parameters <- list(geography = c('us', 'state', 'county'),
                      state = c(NA, rep('NC', 2)),
@@ -96,7 +103,7 @@ ff_all_year_acs <- function(subject, year, table, variable_names = NULL) {
                      year = rep(year, 3),
                      use_table = rep(table, 3))
 
-  df <- ff_iterate_acs(parameters, variable_names)
+  df <- ff_iterate_acs(parameters)
 
   return(df)
 
