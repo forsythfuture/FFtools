@@ -68,7 +68,9 @@ ff_iterate_acs <- function(parameters_list) {
     dplyr::mutate(se = moe / 1.645) %>%
     # rename columns to match standards
     dplyr::rename(geo_description = NAME, description = label) %>%
-    dplyr::select(-GEOID, -variable, -moe)
+    dplyr::select(-GEOID, -variable, -moe) %>%
+    # change county name labels from "County, North Carolina" to "County, NC"
+    dplyr::mutate(geo_description = str_replace(geo_description, "County, North Carolina", "County, NC"))
 
   return(acs)
 
