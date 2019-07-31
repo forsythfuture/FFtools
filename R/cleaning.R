@@ -186,7 +186,7 @@ ff_acs_age <- function(df, age_column, recode = F, recode_list = NULL) {
   if (recode == T) {
 
     df <- df %>%
-      dplyr::mutate(subtype = dplyr::recode(rlang::.data$subtype, !!! recode_list))
+      dplyr::mutate(subtype = dplyr::recode(subtype, !!! recode_list))
   }
 
   return(df)
