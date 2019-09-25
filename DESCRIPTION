@@ -24,5 +24,9 @@ Imports:
     purrr,
     methods,
     colorspace,
-    highcharter
+    highcharter,
+    htmltools,
+    leaflet,
+    glue,
+    sf
 RoxygenNote: 6.1.1

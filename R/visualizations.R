@@ -393,3 +393,66 @@ ff_plot_demo_line <- function(data, demographic, y_axis_title, percent = F, doll
    return(chart)
 
 }
+
+#' Choropleth Map for Census Tracts
+#'
+#' This function creates choropleth maps for census tract estimates.
+#'
+#' @param data Name of the dataframe with data and shapefiles
+#' @param col_census_name column name as a string of the column with the census tract names
+#' @param col_estimate column name as a string of the column with the estimate we want to plot
+#' @param title title of plot
+#' @param reverse reverse the mapping of the colors to numbers (by default dark colors represent high numbers)
+#'
+#' @return choropleth map of census tracts and estimate
+#'
+#' @examples
+#' df <- tidycensus::get_acs(state = "NC",
+#'                           county = "Forsyth",
+#'                           geography = "tract",
+#'                           variables = "S2301_C03_001",
+#'                           geometry = TRUE) %>%
+#'       dplyr::mutate(NAME = stringr::str_replace(", Forsyth County, North Carolina", ""))
+#'
+#' ff_plot_census(df, "NAME", "estimate", "Employment Rate", T, NULL, "%")
+#'
+#' @export
+#' @importFrom magrittr "%>%"
+ff_plot_census <- function(data, col_census_name, col_estimate, title,
+                           reverse_colors = F, legend_suffix = NULL, legend_prefix = NULL) {
+
+   title <- title
+
+   pal <- leaflet::colorNumeric(
+      palette = "Blues",
+      domain = NULL,
+      na.color = "transparent",
+      reverse = reverse_colors)
+
+   labs <- glue::glue("<strong>{data[[col_census_name]]}</strong><br>{title}: <strong>{data[[col_estimate]]}%</strong>") %>%
+      lapply(htmltools::HTML)
+
+   data %>%
+      sf::st_transform(crs = '+proj=longlat +datum=WGS84') %>%
+      leaflet::leaflet() %>%
+      leaflet::setView(lat = 36.0999, lng = -80.2442, zoom = 11) %>%
+      leaflet::addProviderTiles(providers$CartoDB.Positron) %>%
+      leaflet::addPolygons(fillOpacity = .8,
+                  weight = 1,
+                  color = "black",
+                  dashArray = "1",
+                  smoothFactor = 0.2,
+                  fillColor = ~pal(estimate),
+                  label = labs,
+                  highlight = highlightOptions(
+                     weight = 5,
+                     color = "#666",
+                     dashArray = "",
+                     fillOpacity = 1,
+                     bringToFront = TRUE)) %>%
+      leaflet::addLegend(pal = pal, values = ~estimate, opacity = 0.7,
+                title = title, position = "bottomright",
+                labFormat = labelFormat(suffix = legend_suffix,
+                                        prefix = legend_prefix))
+
+}
