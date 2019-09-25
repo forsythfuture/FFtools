@@ -22,5 +22,7 @@ Imports:
     rlang,
     tidycensus,
     purrr,
-    methods
+    methods,
+    colorspace,
+    highcharter
 RoxygenNote: 6.1.1
