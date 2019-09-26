@@ -436,7 +436,7 @@ ff_plot_census <- function(data, col_census_name, col_estimate, title,
       sf::st_transform(crs = '+proj=longlat +datum=WGS84') %>%
       leaflet::leaflet() %>%
       leaflet::setView(lat = 36.0999, lng = -80.2442, zoom = 11) %>%
-      leaflet::addProviderTiles(providers$CartoDB.Positron) %>%
+      leaflet::addProviderTiles("CartoDB.Positron") %>%
       leaflet::addPolygons(fillOpacity = .8,
                   weight = 1,
                   color = "black",
@@ -444,7 +444,7 @@ ff_plot_census <- function(data, col_census_name, col_estimate, title,
                   smoothFactor = 0.2,
                   fillColor = ~pal(estimate),
                   label = labs,
-                  highlight = highlightOptions(
+                  highlight = leaflet::highlightOptions(
                      weight = 5,
                      color = "#666",
                      dashArray = "",
@@ -452,7 +452,7 @@ ff_plot_census <- function(data, col_census_name, col_estimate, title,
                      bringToFront = TRUE)) %>%
       leaflet::addLegend(pal = pal, values = ~estimate, opacity = 0.7,
                 title = title, position = "bottomright",
-                labFormat = labelFormat(suffix = legend_suffix,
+                labFormat = leaflet::labelFormat(suffix = legend_suffix,
                                         prefix = legend_prefix))
 
 }
