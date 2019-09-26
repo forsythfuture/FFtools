@@ -1,3 +1,61 @@
+#' Bar and Line Chart of Comparison Geographies
+#'
+#' This function creates a bar and line chart of comparison communities for a given aggregate metric.
+#' The most recent year's data will be returned in the bar chart.
+#'
+#' The input dataset needs to have columns of the following form, and with the following names:
+#' - year: year of the data
+#' - geo_description: geography
+#' - type: general description of the demographic identifier (Race and Ethnicity, Total Population, etc)
+#' - subtype: specific description of the demographic identifier (African American, Employment Rate, etc)
+#' - estimate: value
+#'
+#' @param data Name of the dataframe with columns outlined above
+#' @param comparison_filter String in the `type` column that signifies the rows that are needed for this plot,
+#'                          Will generally be rows of total aggregate value
+#' @param y_axis_title Title for y axis and tooltip
+#' @param percent Boolean (TRUE / FALSE), whether estimate value is a percent; this will add percent labels to axis
+#' @param dollar Boolean (TRUE / FALSE), whether estimate value is a dollar; this will add dollar labels to the axis
+#' @param geography_order Vector of strings that sets the geography order of the legend
+#'
+#' @return bar plot of the most recent year of data followed by a line chart
+#'
+#' @examples
+#' geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC", "North Carolina", "United States")
+#' years <- seq(2006, 2017, 1)
+#'
+#' df <- data.frame(
+#'     year = rep(years, each=length(geographies)),
+#'     geo_description = rep(geographies, length(years)),
+#'     type = "Total Population",
+#'     subtype = "Employment Rate",
+#'     stringsAsFactors = FALSE
+#' )
+#'
+#' df$estimate <- rnorm(nrow(df), mean = .5, sd = .15)
+#'
+#' ff_plot_compare(data = df,
+#'                 comparison_filter = "Total Population",
+#'                 y_axis_title = "Employment Rate (%)",
+#'                 percent = T,
+#'                 dollar = F,
+#'                 geography_order = c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+#'                                     "North Carolina", "United States"))
+#' @export
+#' @importFrom magrittr "%>%"
+ff_plot_compare <- function(data, comparison_filter, y_axis_title, percent = F, dollar = F,
+                            geography_order = c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+                                                "North Carolina", "United States")) {
+
+   # create bar and line plots separately
+   bar <- FFtools::ff_plot_compare_bar(data, comparison_filter, y_axis_title, percent, dollar, geography_order)
+   line <- FFtools::ff_plot_compare_line(data, comparison_filter, y_axis_title, percent, dollar, geography_order)
+
+   highcharter::hw_grid(list(bar, line), ncol = 1) %>%
+      htmltools::browsable()
+
+}
+
 #' Bar Chart of Comparison Geographies
 #'
 #' This function creates a bar chart of Forsyth County and comparison communities for a given metric.
@@ -206,6 +264,55 @@ ff_plot_compare_line <- function(data, comparison_filter, y_axis_title, percent 
 
 }
 
+#' Bar and Line Chart of Demographics
+#'
+#' This function creates a bar and line chart of a given demographic data within Forsyth County.
+#'
+#' The input dataset needs to have, at a minimum, columns of the following form and with the following names:
+#' - year: year of the data
+#' - geo_description: geography (needs Forsyth County as one of the geographies)
+#' - type: general description of the demographic identifier (Race and Ethnicity, Total Population, etc)
+#' - subtype: specific description of the demographic identifier (African American, Employment Rate, etc)
+#' - estimate: value
+#'
+#' @param data Name of the dataframe with columns outlined above
+#' @param demographic String in the `type` column that signifies the demographic
+#' @param y_axis_title Title for y axis and tooltip
+#' @param percent Boolean (TRUE / FALSE), whether estimate value is a percent; this will add percent labels to axis
+#' @param dollar Boolean (TRUE / FALSE), whether estimate value is a dollar; this will add dollar labels to the axis
+#'
+#' @return bar and line plot of the most recent year of data
+#'
+#' @examples
+#' years <- seq(2006, 2017, 1)
+#'
+#' df <- data.frame(
+#'     year = rep(2017, 3),
+#'     geo_description = rep("Forsyth County, NC", 3),
+#'     type = rep("Race and Ethnicity", 3),
+#'     subtype = c("African American", "White", "Hispanic / Latino"),
+#'     estimate = rnorm(3, mean = .5, sd = .15),
+#'     stringsAsFactors = FALSE
+#' )
+#'
+#' ff_plot_demo(data = df,
+#'              demographic = "Race and Ethnicity",
+#'              y_axis_title = "Employment Rate (%)",
+#'              percent = T,
+#'              dollar = F)
+#' @export
+#' @importFrom magrittr "%>%"
+ff_plot_demo <- function(data, demographic, y_axis_title, percent = F, dollar = F) {
+
+   # create bar and line plots separately
+   bar <- FFtools::ff_plot_demo_bar(data, demographic, y_axis_title, percent, dollar)
+   line <- FFtools::ff_plot_demo_line(data, demographic, y_axis_title, percent, dollar)
+
+   highcharter::hw_grid(list(bar, line), ncol = 1) %>%
+      htmltools::browsable()
+
+}
+
 #' Bar Chart of Demographics
 #'
 #' This function creates a bar chart of a given demographic for the most recent year within Forsyth County.
@@ -229,12 +336,11 @@ ff_plot_compare_line <- function(data, comparison_filter, y_axis_title, percent 
 #' years <- seq(2006, 2017, 1)
 #'
 #' df <- data.frame(
-#'     year = rep(2017, 3),
-#'     geo_description = rep("Forsyth County, NC", 3),
-#'     type = rep("Race and Ethnicity", 3),
-#'     subtype = c("African American", "White", "Hispanic / Latino"),
-#'     estimate = rnorm(3, mean = .5, sd = .15)
-#'     stringsAsFactors = FALSE
+#'    year = rep(seq(2007, 2017, 1), each=3),
+#'    geo_description = "Forsyth County, NC",
+#'    type = "Race and Ethnicity",
+#'    subtype = rep(c("African American", "White", "Hispanic / Latino"),11),
+#'    stringsAsFactors = FALSE
 #' )
 #'
 #' ff_plot_demo_bar(data = df,
@@ -334,7 +440,7 @@ ff_plot_demo_line <- function(data, demographic, y_axis_title, percent = F, doll
 
    # count the number of subgroups within the demographic
    # needed so we know how many colors are needed
-   num_colors <- nrow(unique(data[data["type"] == "Race and Ethnicity", "subtype"]))
+   num_colors <- length(unique(data[data["type"] == demographic, "subtype"]))
 
    # create color palette for the lines
    set2 <- colorspace::qualitative_hcl(num_colors, palette = "Set 2")

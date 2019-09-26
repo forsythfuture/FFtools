@@ -28,5 +28,6 @@ Imports:
     htmltools,
     leaflet,
     glue,
-    sf
+    sf,
+    htmltools
 RoxygenNote: 6.1.1
