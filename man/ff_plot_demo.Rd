@@ -4,14 +4,17 @@
 \alias{ff_plot_demo}
 \title{Bar and Line Chart of Demographics}
 \usage{
-ff_plot_demo(data, demographic, y_axis_title, percent = F, dollar = F)
+ff_plot_demo(data, demographic, line_axis_title, bar_axis_title,
+  percent = F, dollar = F)
 }
 \arguments{
 \item{data}{Name of the dataframe with columns outlined above}
 
 \item{demographic}{String in the `type` column that signifies the demographic}
 
-\item{y_axis_title}{Title for y axis and tooltip}
+\item{line_axis_title}{Title for y axis and tooltip of line chart}
+
+\item{bar_axis_title}{Title for x axis and tooltip for bar chart}
 
 \item{percent}{Boolean (TRUE / FALSE), whether estimate value is a percent; this will add percent labels to axis}
 
@@ -45,7 +48,8 @@ df <- data.frame(
 
 ff_plot_demo(data = df,
              demographic = "Race and Ethnicity",
-             y_axis_title = "Employment Rate (\%)",
+             line_axis_title = "Employment Rate (\%)",
+             bar_axis_title = "2017 Employment Rate (\%)",
              percent = T,
              dollar = F)
 }

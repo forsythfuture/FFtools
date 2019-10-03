@@ -33,7 +33,8 @@ The input dataset needs to have, at a minimum, columns of the following form and
 - estimate: value
 }
 \examples{
-geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC", "North Carolina", "United States")
+geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+                 "North Carolina", "United States")
 years <- seq(2006, 2017, 1)
 
 df <- data.frame(

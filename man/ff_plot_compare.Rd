@@ -4,8 +4,8 @@
 \alias{ff_plot_compare}
 \title{Bar and Line Chart of Comparison Geographies}
 \usage{
-ff_plot_compare(data, comparison_filter, y_axis_title, percent = F,
-  dollar = F, geography_order = c("Forsyth County, NC",
+ff_plot_compare(data, comparison_filter, line_axis_title, bar_axis_title,
+  percent = F, dollar = F, geography_order = c("Forsyth County, NC",
   "Guilford County, NC", "Durham County, NC", "North Carolina",
   "United States"))
 }
@@ -15,7 +15,9 @@ ff_plot_compare(data, comparison_filter, y_axis_title, percent = F,
 \item{comparison_filter}{String in the `type` column that signifies the rows that are needed for this plot,
 Will generally be rows of total aggregate value}
 
-\item{y_axis_title}{Title for y axis and tooltip}
+\item{line_axis_title}{Title for y axis and tooltip of line chart}
+
+\item{bar_axis_title}{Title for x axis and tooltip for bar chart}
 
 \item{percent}{Boolean (TRUE / FALSE), whether estimate value is a percent; this will add percent labels to axis}
 
@@ -39,7 +41,8 @@ The input dataset needs to have columns of the following form, and with the foll
 - estimate: value
 }
 \examples{
-geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC", "North Carolina", "United States")
+geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+                 "North Carolina", "United States")
 years <- seq(2006, 2017, 1)
 
 df <- data.frame(
@@ -54,9 +57,11 @@ df$estimate <- rnorm(nrow(df), mean = .5, sd = .15)
 
 ff_plot_compare(data = df,
                 comparison_filter = "Total Population",
-                y_axis_title = "Employment Rate (\%)",
+                line_axis_title = "Employment Rate (\%)",
+                bar_axis_title = "2017 Employment Rate (\%)",
                 percent = T,
                 dollar = F,
-                geography_order = c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+                geography_order = c("Forsyth County, NC", "Guilford County, NC",
+                                    "Durham County, NC",
                                     "North Carolina", "United States"))
 }

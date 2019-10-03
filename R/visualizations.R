@@ -13,7 +13,8 @@
 #' @param data Name of the dataframe with columns outlined above
 #' @param comparison_filter String in the `type` column that signifies the rows that are needed for this plot,
 #'                          Will generally be rows of total aggregate value
-#' @param y_axis_title Title for y axis and tooltip
+#' @param line_axis_title Title for y axis and tooltip of line chart
+#' @param bar_axis_title Title for x axis and tooltip for bar chart
 #' @param percent Boolean (TRUE / FALSE), whether estimate value is a percent; this will add percent labels to axis
 #' @param dollar Boolean (TRUE / FALSE), whether estimate value is a dollar; this will add dollar labels to the axis
 #' @param geography_order Vector of strings that sets the geography order of the legend
@@ -21,7 +22,8 @@
 #' @return bar plot of the most recent year of data followed by a line chart
 #'
 #' @examples
-#' geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC", "North Carolina", "United States")
+#' geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+#'                  "North Carolina", "United States")
 #' years <- seq(2006, 2017, 1)
 #'
 #' df <- data.frame(
@@ -36,20 +38,22 @@
 #'
 #' ff_plot_compare(data = df,
 #'                 comparison_filter = "Total Population",
-#'                 y_axis_title = "Employment Rate (%)",
+#'                 line_axis_title = "Employment Rate (%)",
+#'                 bar_axis_title = "2017 Employment Rate (%)",
 #'                 percent = T,
 #'                 dollar = F,
-#'                 geography_order = c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+#'                 geography_order = c("Forsyth County, NC", "Guilford County, NC",
+#'                                     "Durham County, NC",
 #'                                     "North Carolina", "United States"))
 #' @export
 #' @importFrom magrittr "%>%"
-ff_plot_compare <- function(data, comparison_filter, y_axis_title, percent = F, dollar = F,
+ff_plot_compare <- function(data, comparison_filter, line_axis_title, bar_axis_title, percent = F, dollar = F,
                             geography_order = c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
                                                 "North Carolina", "United States")) {
 
    # create bar and line plots separately
-   bar <- FFtools::ff_plot_compare_bar(data, comparison_filter, y_axis_title, percent, dollar, geography_order)
-   line <- FFtools::ff_plot_compare_line(data, comparison_filter, y_axis_title, percent, dollar, geography_order)
+   bar <- FFtools::ff_plot_compare_bar(data, comparison_filter, bar_axis_title, percent, dollar, geography_order)
+   line <- FFtools::ff_plot_compare_line(data, comparison_filter, line_axis_title, percent, dollar, geography_order)
 
    highcharter::hw_grid(list(bar, line), ncol = 1) %>%
       htmltools::browsable()
@@ -79,7 +83,8 @@ ff_plot_compare <- function(data, comparison_filter, y_axis_title, percent = F, 
 #' @return bar plot of the most recent year of data
 #'
 #' @examples
-#' geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC", "North Carolina", "United States")
+#' geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+#'                  "North Carolina", "United States")
 #' years <- seq(2006, 2017, 1)
 #'
 #' df <- data.frame(
@@ -171,7 +176,8 @@ ff_plot_compare_bar <- function(data, comparison_filter, y_axis_title, percent =
 #' @return line chart of all years data
 #'
 #' @examples
-#' geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC", "North Carolina", "United States")
+#' geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+#'                  "North Carolina", "United States")
 #' years <- seq(2006, 2017, 1)
 #'
 #' df <- data.frame(
@@ -277,7 +283,8 @@ ff_plot_compare_line <- function(data, comparison_filter, y_axis_title, percent 
 #'
 #' @param data Name of the dataframe with columns outlined above
 #' @param demographic String in the `type` column that signifies the demographic
-#' @param y_axis_title Title for y axis and tooltip
+#' @param line_axis_title Title for y axis and tooltip of line chart
+#' @param bar_axis_title Title for x axis and tooltip for bar chart
 #' @param percent Boolean (TRUE / FALSE), whether estimate value is a percent; this will add percent labels to axis
 #' @param dollar Boolean (TRUE / FALSE), whether estimate value is a dollar; this will add dollar labels to the axis
 #'
@@ -297,16 +304,17 @@ ff_plot_compare_line <- function(data, comparison_filter, y_axis_title, percent 
 #'
 #' ff_plot_demo(data = df,
 #'              demographic = "Race and Ethnicity",
-#'              y_axis_title = "Employment Rate (%)",
+#'              line_axis_title = "Employment Rate (%)",
+#'              bar_axis_title = "2017 Employment Rate (%)",
 #'              percent = T,
 #'              dollar = F)
 #' @export
 #' @importFrom magrittr "%>%"
-ff_plot_demo <- function(data, demographic, y_axis_title, percent = F, dollar = F) {
+ff_plot_demo <- function(data, demographic, line_axis_title, bar_axis_title, percent = F, dollar = F) {
 
    # create bar and line plots separately
-   bar <- FFtools::ff_plot_demo_bar(data, demographic, y_axis_title, percent, dollar)
-   line <- FFtools::ff_plot_demo_line(data, demographic, y_axis_title, percent, dollar)
+   bar <- FFtools::ff_plot_demo_bar(data, demographic, bar_axis_title, percent, dollar)
+   line <- FFtools::ff_plot_demo_line(data, demographic, line_axis_title, percent, dollar)
 
    highcharter::hw_grid(list(bar, line), ncol = 1) %>%
       htmltools::browsable()
@@ -411,7 +419,8 @@ ff_plot_demo_bar <- function(data, demographic, y_axis_title, percent = F, dolla
 #' @return line chart of the demographic for Forsyth County and all years
 #'
 #' @examples
-#' geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC", "North Carolina", "United States")
+#' geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+#'                  "North Carolina", "United States")
 #' years <- seq(2006, 2017, 1)
 #'
 #' df <- data.frame(
@@ -440,7 +449,7 @@ ff_plot_demo_line <- function(data, demographic, y_axis_title, percent = F, doll
 
    # count the number of subgroups within the demographic
    # needed so we know how many colors are needed
-   num_colors <- length(unique(data[data["type"] == demographic, "subtype"]))
+   num_colors <- nrow(unique(data[data["type"] == demographic, "subtype"]))
 
    # create color palette for the lines
    set2 <- colorspace::qualitative_hcl(num_colors, palette = "Set 2")

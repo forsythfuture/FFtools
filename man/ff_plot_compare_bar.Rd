@@ -39,7 +39,8 @@ The input dataset needs to have columns of the following form, and with the foll
 - estimate: value
 }
 \examples{
-geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC", "North Carolina", "United States")
+geographies <- c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+                 "North Carolina", "United States")
 years <- seq(2006, 2017, 1)
 
 df <- data.frame(

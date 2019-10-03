@@ -208,7 +208,7 @@ ff_estimates_ci <- function(data_frame, estimate, se, format,
     # iterate through each row in the dataframe
     for (i in 1:nrow(data_frame)) {
 
-      # conduct proportion test for between value at row in loop and all other valyes
+      # conduct proportion test for between value at row in loop and all other values
       cell_value <- sapply(1:nrow(data_frame),
                             function(x) ff_proportions(c(success_c[i],success_c[x]), c(trials_c[i],trials_c[x]), rate_per_unit))
 
@@ -253,9 +253,9 @@ ff_estimates_ci <- function(data_frame, estimate, se, format,
 #'     is the number of crimes per 100,000 people, so 100,000 would be entered. Defaults to 1, which is no adjustment.
 #'     Only used if format equals 'binomial'.
 #'
-ff_proportions <- function(successes, trials, rate_per_unit) {
+ff_proportions <- function(successes, trials, rate_per_unit=1) {
 
-  # conduct prop test to create percentages for each variable
+  # conduct fishers exact test to create percentages for each variable
   # and confidence interval of difference
   pt <- stats::prop.test(x = successes, n = trials)
 
@@ -270,7 +270,7 @@ ff_proportions <- function(successes, trials, rate_per_unit) {
 
 }
 
-#' Pretty formatting of significance testing nd estimate tables with Kable
+#' Pretty formatting of significance testing and estimate tables with Kable
 #'
 #' This function elegantly formats significance testing matrices produces
 #' by `ff_sigtest` or estimate matrices produced by `ff_estimates_ci`.
@@ -392,57 +392,5 @@ ff_create_varnames <- function(data_frame, table_data, var_names) {
   row.names(table_data) <- names_vec
 
   return(table_data)
-
-}
-
-#' Plot of p-values
-#'
-#' This function returns a plot similair to a correlation plot, highlighting whether p-values are significant.
-#' THe function takes as input a table of p-values created by `ff_sigtest`. In using `ff_sigtest` to create a plot
-#' with this function, the `pretty_print` parameter msut be set to false.
-#'
-#' @param pvalue_matrix A table of p-values generated from `ff_sigtest`.
-#' @return A ggplot graphic that is color coded based on teh p-value.
-#' @examples
-#' df <- data.frame(year = c(2016, 2016, 2017, 2017),
-#'                  geo_description = c('Forsyth County, NC', 'Guilford County, NC',
-#'                                      'Forsyth County, NC', 'Guilford County, NC'),
-#'                 estimate = c(.66, .63, .88, .48),
-#'                 se = c(.1, .15, .06, .09),
-#'                 success = c(10, 12, 15, 19),
-#'                 trials = c(15, 19, 17, 39))
-#'
-#' # create table of p-values
-#' pvalues <- ff_sigtest(data_frame = df, estimate = 'estimate', se = 'se',
-#'                       test = 'zscore', var_names = c('year', 'geo_description'))
-#'
-#' # generate plot
-#' ff_p_plot(pvalues)
-#'
-#' @export
-#' @importFrom magrittr "%>%"
-ff_p_plot <- function(pvalue_matrix) {
-
-  # identify column names of first and last columns, so they can be used to gather data
-  first <- names(pvalue_matrix[1])
-  last <- names(pvalue_matrix[ncol(pvalue_matrix)])
-
-  # add column of row names to matrix
-  pvalue_matrix$row_names <- row.names(pvalue_matrix)
-
-  # gather values to create long form data set
-  pvalue_matrix %>% tidyr::gather(first:last, key = 'var1', value = 'value') %>%
-    # plot
-    ggplot2::ggplot(ggplot2::aes(row_names, var1, fill = value))+
-    ggplot2::geom_tile(color = "white")+
-    ggplot2::scale_fill_gradient2(low = "blue", high = "red", mid = "white",
-                         midpoint = 0.05, space = "Lab",
-                         name="P-value Matrix\nBlue > 0.05\nRed > 0.05") +
-    ggplot2::labs(title = 'Statistically significant P-values are in red',
-         x = '', y = '') +
-    ggplot2::theme_minimal()+
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 1,
-                                     size = 12, hjust = 1)) +
-    ggplot2::coord_fixed()
 
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis.R
 \name{ff_pretty_kable}
 \alias{ff_pretty_kable}
-\title{Pretty formatting of significance testing nd estimate tables with Kable}
+\title{Pretty formatting of significance testing and estimate tables with Kable}
 \usage{
 ff_pretty_kable(data_matrix, table_type, format = "continuous",
   table_name = NULL)
