@@ -5,7 +5,7 @@
 \title{Line Chart of Demographics}
 \usage{
 ff_plot_demo_line(data, demographic, y_axis_title, percent = F,
-  dollar = F)
+  dollar = F, color_palette = "Set 2")
 }
 \arguments{
 \item{data}{Name of the dataframe with columns outlined above}
@@ -17,6 +17,9 @@ ff_plot_demo_line(data, demographic, y_axis_title, percent = F,
 \item{percent}{Boolean (TRUE / FALSE), whether estimate value is a percent; this will add percent labels to axis}
 
 \item{dollar}{Boolean (TRUE / FALSE), whether estimate value is a dollar; this will add dollar labels to the axis}
+
+\item{color_palette}{string representing the color palette to use, possible palettes are qualitative
+palettes from the <a href="http://library http://colorspace.r-forge.r-project.org/reference/hcl_palettes.html">`colorspace` library</a>.}
 }
 \value{
 line chart of the demographic for Forsyth County and all years

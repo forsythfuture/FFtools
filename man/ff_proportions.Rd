@@ -4,7 +4,7 @@
 \alias{ff_proportions}
 \title{Difference and confidence interval of difference between two binomial observations}
 \usage{
-ff_proportions(successes, trials, rate_per_unit)
+ff_proportions(successes, trials, rate_per_unit = 1)
 }
 \arguments{
 \item{successes}{Vector of two numbers that represent the number of successes in each

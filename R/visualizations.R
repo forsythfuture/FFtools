@@ -287,6 +287,8 @@ ff_plot_compare_line <- function(data, comparison_filter, y_axis_title, percent 
 #' @param bar_axis_title Title for x axis and tooltip for bar chart
 #' @param percent Boolean (TRUE / FALSE), whether estimate value is a percent; this will add percent labels to axis
 #' @param dollar Boolean (TRUE / FALSE), whether estimate value is a dollar; this will add dollar labels to the axis
+#' @param color_palette string representing the color palette to use, possible palettes are qualitative
+#'                      palettes from the <a href="http://library http://colorspace.r-forge.r-project.org/reference/hcl_palettes.html">`colorspace` library</a>.
 #'
 #' @return bar and line plot of the most recent year of data
 #'
@@ -310,11 +312,11 @@ ff_plot_compare_line <- function(data, comparison_filter, y_axis_title, percent 
 #'              dollar = F)
 #' @export
 #' @importFrom magrittr "%>%"
-ff_plot_demo <- function(data, demographic, line_axis_title, bar_axis_title, percent = F, dollar = F) {
+ff_plot_demo <- function(data, demographic, line_axis_title, bar_axis_title, percent = F, dollar = F, color_palette = 'Set 2') {
 
    # create bar and line plots separately
-   bar <- FFtools::ff_plot_demo_bar(data, demographic, bar_axis_title, percent, dollar)
-   line <- FFtools::ff_plot_demo_line(data, demographic, line_axis_title, percent, dollar)
+   bar <- FFtools::ff_plot_demo_bar(data, demographic, bar_axis_title, percent, dollar, color_palette)
+   line <- FFtools::ff_plot_demo_line(data, demographic, line_axis_title, percent, dollar, color_palette)
 
    highcharter::hw_grid(list(bar, line), ncol = 1) %>%
       htmltools::browsable()
@@ -337,6 +339,8 @@ ff_plot_demo <- function(data, demographic, line_axis_title, bar_axis_title, per
 #' @param y_axis_title Title for y axis and tooltip
 #' @param percent Boolean (TRUE / FALSE), whether estimate value is a percent; this will add percent labels to axis
 #' @param dollar Boolean (TRUE / FALSE), whether estimate value is a dollar; this will add dollar labels to the axis
+#' @param color_palette string representing the color palette to use, possible palettes are qualitative
+#'                      palettes from the <a href="http://library http://colorspace.r-forge.r-project.org/reference/hcl_palettes.html">`colorspace` library</a>.
 #'
 #' @return bar plot of the most recent year of data
 #'
@@ -358,7 +362,7 @@ ff_plot_demo <- function(data, demographic, line_axis_title, bar_axis_title, per
 #'                  dollar = F)
 #' @export
 #' @importFrom magrittr "%>%"
-ff_plot_demo_bar <- function(data, demographic, y_axis_title, percent = F, dollar = F) {
+ff_plot_demo_bar <- function(data, demographic, y_axis_title, percent = F, dollar = F, color_palette = "Set 2") {
 
    bar_data <- data %>%
       # only keep the most recent year
@@ -368,7 +372,7 @@ ff_plot_demo_bar <- function(data, demographic, y_axis_title, percent = F, dolla
       dplyr::select(subtype, y = estimate)
 
    # create color palette for the bars
-   bar_data$color <- colorspace::qualitative_hcl(length(unique(bar_data$subtype)), palette = "Dark 2")
+   bar_data$color <- colorspace::qualitative_hcl(length(unique(bar_data$subtype)), palette = color_palette)
 
    # multiply estimate times 100 if percent equals true,
    # needed since highcharter plots exact number
@@ -415,6 +419,8 @@ ff_plot_demo_bar <- function(data, demographic, y_axis_title, percent = F, dolla
 #' @param y_axis_title Title for y axis and tooltip
 #' @param percent Boolean (TRUE / FALSE), whether estimate value is a percent; this will add percent labels to axis
 #' @param dollar Boolean (TRUE / FALSE), whether estimate value is a dollar; this will add dollar labels to the axis
+#' @param color_palette string representing the color palette to use, possible palettes are qualitative
+#'                      palettes from the <a href="http://library http://colorspace.r-forge.r-project.org/reference/hcl_palettes.html">`colorspace` library</a>.
 #'
 #' @return line chart of the demographic for Forsyth County and all years
 #'
@@ -442,7 +448,7 @@ ff_plot_demo_bar <- function(data, demographic, y_axis_title, percent = F, dolla
 #'                                          "North Carolina", "United States"))
 #' @export
 #' @importFrom magrittr "%>%"
-ff_plot_demo_line <- function(data, demographic, y_axis_title, percent = F, dollar = F) {
+ff_plot_demo_line <- function(data, demographic, y_axis_title, percent = F, dollar = F, color_palette = "Set 2") {
 
    # identify years, so they can be added as the x axis
    years <- unique(data$year)
@@ -452,7 +458,7 @@ ff_plot_demo_line <- function(data, demographic, y_axis_title, percent = F, doll
    num_colors <- nrow(unique(data[data["type"] == demographic, "subtype"]))
 
    # create color palette for the lines
-   set2 <- colorspace::qualitative_hcl(num_colors, palette = "Set 2")
+   set2 <- colorspace::qualitative_hcl(num_colors, palette = color_palette)
 
    # multiply estimate times 100 if percent equals true,
    # needed since highcharter plots exact number

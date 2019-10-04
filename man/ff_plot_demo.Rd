@@ -5,7 +5,7 @@
 \title{Bar and Line Chart of Demographics}
 \usage{
 ff_plot_demo(data, demographic, line_axis_title, bar_axis_title,
-  percent = F, dollar = F)
+  percent = F, dollar = F, color_palette = "Set 2")
 }
 \arguments{
 \item{data}{Name of the dataframe with columns outlined above}
@@ -19,6 +19,9 @@ ff_plot_demo(data, demographic, line_axis_title, bar_axis_title,
 \item{percent}{Boolean (TRUE / FALSE), whether estimate value is a percent; this will add percent labels to axis}
 
 \item{dollar}{Boolean (TRUE / FALSE), whether estimate value is a dollar; this will add dollar labels to the axis}
+
+\item{color_palette}{string representing the color palette to use, possible palettes are qualitative
+palettes from the <a href="http://library http://colorspace.r-forge.r-project.org/reference/hcl_palettes.html">`colorspace` library</a>.}
 }
 \value{
 bar and line plot of the most recent year of data
