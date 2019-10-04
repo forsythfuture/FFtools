@@ -368,7 +368,7 @@ ff_plot_demo_bar <- function(data, demographic, y_axis_title, percent = F, dolla
       dplyr::select(subtype, y = estimate)
 
    # create color palette for the bars
-   bar_data$color <- colorspace::qualitative_hcl(length(unique(bar_data$subtype)), palette = "Set 2")
+   bar_data$color <- colorspace::qualitative_hcl(length(unique(bar_data$subtype)), palette = "Dark 2")
 
    # multiply estimate times 100 if percent equals true,
    # needed since highcharter plots exact number
