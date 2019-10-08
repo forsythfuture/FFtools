@@ -152,6 +152,34 @@ ff_acs_ethnicity <- function(df, ethnicity_column) {
 
 }
 
+#' Relabel PUMS data from numeric race / ethnicity to descriptive string
+#'
+#' This function labels Race / ethnicities in PUMS data as either White, African American, or
+#' Hispanic / Latino.  The
+#'
+#' @param df Dataframe of PUMS data.  The dataframe must have the following two columns: `RAC1P` and `HISP`
+#' @return The same dataframe, but with the race / ethnicity column `RAC1P` labeled descriptively.
+#' @examples
+#' ff_pums_ethnicity(df)
+#'
+#' @export
+#' @importFrom magrittr "%>%"
+ff_pums_ethnicity <- function(df) {
+
+  race_recode <- c(`1` = "White",
+                   `2` = "African American")
+
+  # first, recode the race value
+  df$RAC1P <- dplyr::recode(df, !!!race_recode,
+                            # make values that are not white or AA 'other'
+                            .default = 'Other')
+
+  # now, override the race value to show hispanc / latino for people in this ethnicity
+  df$RAC1P <- ifelse(df$HISP != "01", "Hispanic / Latino", df$RAC1P)
+
+  return(df)
+}
+
 #' Filter for age rows in ACS data and rebin ages if needed
 #'
 #' This function filters ACS data for rows that include ages.  It also has optional
