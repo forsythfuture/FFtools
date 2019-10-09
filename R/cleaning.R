@@ -170,7 +170,7 @@ ff_pums_ethnicity <- function(df) {
                    `2` = "African American")
 
   # first, recode the race value
-  df$RAC1P <- dplyr::recode(df, !!!race_recode,
+  df$RAC1P <- dplyr::recode(df$RAC1P, !!!race_recode,
                             # make values that are not white or AA 'other'
                             .default = 'Other')
 
