@@ -394,3 +394,30 @@ ff_create_varnames <- function(data_frame, table_data, var_names) {
   return(table_data)
 
 }
+
+#' Create a survey design object from the Census PUMS dataset
+#'
+#' This function uses the `srvy` package to create a survey design from the PUMS dataset
+#' with replicate weights.  Survey designs can be creaed for the household or population datasets.
+#'
+#' @param data_frame A data frame used in the function to create the table.
+#' @param wgt Name of the weight column, unquoted; either `WGTP` (household) or `PWGTP` (population).
+#' @param rep_wgt Name of the replicate weight columns as quoted regular expressions.
+#'                Either `"WGTP[0-9]+"` (household) or `"PWGTP[0-9]+"` (population)
+#'
+#' @importFrom magrittr "%>%"
+create_pums_survey <- function(data_frame, wgt, rep_wgt) {
+
+  wgt = rlang::enquo(wgt)
+
+  data_frame %>%
+    srvyr::as_survey_design(id = 1,
+                           weights = !!wgt,
+                           repweights = rep_wgt,
+                           type = "JKn",
+                           scale = 4/80,
+                           rscales = rep(1,80),
+                           combined.weights = TRUE
+    )
+
+}
