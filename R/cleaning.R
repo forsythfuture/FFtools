@@ -144,7 +144,7 @@ ff_acs_ethnicity <- function(df, ethnicity_column) {
     dplyr::mutate(subtype = stringr::str_extract(!! ethnicity_column, re_ethnicities)) %>%
     # convert ethnicity names to Forsyth Futures conventions
     dplyr::mutate(subtype = ifelse(.$subtype == 'Black or African American', 'African American',
-                                ifelse(.$subtype == 'Hispanic or Latino origin', 'Hispanic/Latino',
+                                ifelse(.$subtype == 'Hispanic or Latino origin', 'Hispanic / Latino',
                                    ifelse(.$subtype == 'White alone, not Hispanic or Latino', 'White, non-Hispanic', 'Not sure'))),
                   type = 'Ethnicity')
 
