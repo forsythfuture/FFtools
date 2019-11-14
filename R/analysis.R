@@ -406,6 +406,7 @@ ff_create_varnames <- function(data_frame, table_data, var_names) {
 #'                Either `"WGTP[0-9]+"` (household) or `"PWGTP[0-9]+"` (population)
 #'
 #' @importFrom magrittr "%>%"
+#' @export
 create_pums_survey <- function(data_frame, wgt, rep_wgt) {
 
   wgt = rlang::enquo(wgt)
