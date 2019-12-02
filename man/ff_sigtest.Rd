@@ -4,9 +4,17 @@
 \alias{ff_sigtest}
 \title{Matrix of significance tests}
 \usage{
-ff_sigtest(data_frame, estimate, se, test = "zscore", success = NULL,
-  trials = NULL, var_names = NULL, pretty_print = FALSE,
-  table_name = NULL)
+ff_sigtest(
+  data_frame,
+  estimate,
+  se,
+  test = "zscore",
+  success = NULL,
+  trials = NULL,
+  var_names = NULL,
+  pretty_print = FALSE,
+  table_name = NULL
+)
 }
 \arguments{
 \item{data_frame}{A dataframe containing estimates and either standard errors for z-score test

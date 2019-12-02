@@ -4,9 +4,18 @@
 \alias{ff_estimates_ci}
 \title{Matrix of estimates and confidence intervals}
 \usage{
-ff_estimates_ci(data_frame, estimate, se, format, success = NULL,
-  trials = NULL, rate_per_unit = 1, var_names = NULL,
-  pretty_print = FALSE, table_name = NULL)
+ff_estimates_ci(
+  data_frame,
+  estimate,
+  se,
+  format,
+  success = NULL,
+  trials = NULL,
+  rate_per_unit = 1,
+  var_names = NULL,
+  pretty_print = FALSE,
+  table_name = NULL
+)
 }
 \arguments{
 \item{data_frame}{A dataframe containing estimates and either standard errors for continuous data

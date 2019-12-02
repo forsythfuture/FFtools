@@ -4,8 +4,14 @@
 \alias{ff_inflation_adjust}
 \title{Inflation Adjustments}
 \usage{
-ff_inflation_adjust(data_frame, wages_col, se_col, year_col, year_adjust,
-  errors = FALSE)
+ff_inflation_adjust(
+  data_frame,
+  wages_col,
+  se_col,
+  year_col,
+  year_adjust,
+  errors = FALSE
+)
 }
 \arguments{
 \item{data_frame}{Name of dataframe that contains dollar amounts}

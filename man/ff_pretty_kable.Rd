@@ -4,8 +4,12 @@
 \alias{ff_pretty_kable}
 \title{Pretty formatting of significance testing and estimate tables with Kable}
 \usage{
-ff_pretty_kable(data_matrix, table_type, format = "continuous",
-  table_name = NULL)
+ff_pretty_kable(
+  data_matrix,
+  table_type,
+  format = "continuous",
+  table_name = NULL
+)
 }
 \arguments{
 \item{data_matrix}{A matrix produced by `ff_sigtest` or `ff_estimates_ci`.}

@@ -4,8 +4,14 @@
 \alias{ff_acs_filter}
 \title{Filter rows in ACS data based on column text describing the row}
 \usage{
-ff_acs_filter(df, filter_column, filter_re, subtype_re = NULL,
-  recode = F, recode_list = NULL)
+ff_acs_filter(
+  df,
+  filter_column,
+  filter_re,
+  subtype_re = NULL,
+  recode = F,
+  recode_list = NULL
+)
 }
 \arguments{
 \item{df}{Dataframe of ACS data}

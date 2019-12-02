@@ -4,10 +4,15 @@
 \alias{ff_plot_compare_bar}
 \title{Bar Chart of Comparison Geographies}
 \usage{
-ff_plot_compare_bar(data, comparison_filter, y_axis_title, percent = F,
-  dollar = F, geography_order = c("Forsyth County, NC",
-  "Guilford County, NC", "Durham County, NC", "North Carolina",
-  "United States"))
+ff_plot_compare_bar(
+  data,
+  comparison_filter,
+  y_axis_title,
+  percent = F,
+  dollar = F,
+  geography_order = c("Forsyth County, NC", "Guilford County, NC", "Durham County, NC",
+    "North Carolina", "United States")
+)
 }
 \arguments{
 \item{data}{Name of the dataframe with columns outlined above}

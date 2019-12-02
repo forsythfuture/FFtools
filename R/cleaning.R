@@ -166,7 +166,7 @@ ff_acs_ethnicity <- function(df, ethnicity_column) {
 #' @importFrom magrittr "%>%"
 ff_pums_ethnicity <- function(df) {
 
-  race_recode <- c(`1` = "White",
+  race_recode <- c(`1` = "White, non-Hispanic",
                    `2` = "African American")
 
   # first, recode the race value

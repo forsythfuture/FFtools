@@ -4,8 +4,15 @@
 \alias{ff_plot_census}
 \title{Choropleth Map for Census Tracts}
 \usage{
-ff_plot_census(data, col_census_name, col_estimate, title,
-  reverse_colors = F, legend_suffix = NULL, legend_prefix = NULL)
+ff_plot_census(
+  data,
+  col_census_name,
+  col_estimate,
+  title,
+  reverse_colors = F,
+  legend_suffix = NULL,
+  legend_prefix = NULL
+)
 }
 \arguments{
 \item{data}{Name of the dataframe with data and shapefiles}

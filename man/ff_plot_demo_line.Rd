@@ -4,8 +4,14 @@
 \alias{ff_plot_demo_line}
 \title{Line Chart of Demographics}
 \usage{
-ff_plot_demo_line(data, demographic, y_axis_title, percent = F,
-  dollar = F, color_palette = "Set 2")
+ff_plot_demo_line(
+  data,
+  demographic,
+  y_axis_title,
+  percent = F,
+  dollar = F,
+  color_palette = "Set 2"
+)
 }
 \arguments{
 \item{data}{Name of the dataframe with columns outlined above}
