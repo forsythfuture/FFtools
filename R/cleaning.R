@@ -143,7 +143,7 @@ ff_acs_ethnicity <- function(df, ethnicity_column) {
     # create new column that is only the name of the ethnicity
     dplyr::mutate(subtype = stringr::str_extract(!! ethnicity_column, re_ethnicities)) %>%
     # convert ethnicity names to Forsyth Futures conventions
-    dplyr::mutate(subtype = ifelse(.$subtype == 'Black or African American', 'African American',
+    dplyr::mutate(subtype = ifelse(.$subtype == 'Black or African American', 'Black or African American',
                                 ifelse(.$subtype == 'Hispanic or Latino origin', 'Hispanic / Latino',
                                    ifelse(.$subtype == 'White alone, not Hispanic or Latino', 'White, non-Hispanic', 'Not sure'))),
                   type = 'Ethnicity')
@@ -167,7 +167,7 @@ ff_acs_ethnicity <- function(df, ethnicity_column) {
 ff_pums_ethnicity <- function(df) {
 
   race_recode <- c(`1` = "White, non-Hispanic",
-                   `2` = "African American")
+                   `2` = "Black or African American")
 
   # first, recode the race value
   df$RAC1P <- dplyr::recode(df$RAC1P, !!!race_recode,
