@@ -376,7 +376,7 @@ ff_create_varnames <- function(data_frame, table_data, var_names) {
     stringr::str_replace_all('North Carolina', 'NC') %>%
     stringr::str_replace_all(' County, NC', '') %>%
     # replace ethnicities with abbreviation
-    stringr::str_replace_all('African American', 'AA') %>%
+    stringr::str_replace_all('Black or African American', 'AA') %>%
     stringr::str_replace_all('Hispanic/Latino', 'HL') %>%
     stringr::str_replace_all('White, non-Hispanic', 'Wh') %>%
     # shorten age descriptions (take off the word 'year')
