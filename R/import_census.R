@@ -64,8 +64,8 @@ ff_iterate_acs <- function(parameters_list) {
   acs <- purrr::pmap(parameters_list, ff_single_acs) %>%
     dplyr::bind_rows() %>%
     dplyr::left_join(acs_lookup, by = c('variable' = 'name')) %>%
-    # calculate standard error from 90% confidence interval
-    dplyr::mutate(se = moe / 1.645) %>%
+    # calculate standard error from 95% confidence interval
+    dplyr::mutate(se = moe / 1.96) %>%
     # rename columns to match standards
     dplyr::rename(geo_description = NAME, description = label) %>%
     dplyr::select(-GEOID, -variable, -moe) %>%
