@@ -53,7 +53,11 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
 #'                    table = c(rep('S2301', 3), NA),
 #'                    variables = c(rep(NA, 3), 'S2301_C03_001'),
 #'                    survey = c(rep('acs1', 3), 'acs5'),
+<<<<<<< HEAD
 #'                    moe_level = c(rep(95),
+=======
+#'                    moe_level = c(rep(95)),
+>>>>>>> 56fb2cdcce4ee7471635946d2dfcd77de5ae2350
 #'                    year = rep(current_year, 4),
 #'                    use_table = c(rep(T, 3), F))
 #'
@@ -106,7 +110,11 @@ ff_all_year_acs <- function(subject, year, table) {
                      variables = rep(if (table == F) subject else NA, 3),
                      survey = rep('acs1', 3),
                      year = rep(year, 3),
+<<<<<<< HEAD
                      moe_level = rep(95, 3),
+=======
+                     moe_level = c(rep(95), 3),
+>>>>>>> 56fb2cdcce4ee7471635946d2dfcd77de5ae2350
                      use_table = rep(table, 3))
 
   df <- ff_iterate_acs(parameters)
