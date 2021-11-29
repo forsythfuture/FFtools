@@ -12,7 +12,6 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
                         county = if (is.na(county)) NULL else county,
                         table = table,
                         year = year,
-                        moe_level = 95,
                         survey = survey) %>%
       dplyr::mutate(year = year,
                     geography = geography)
@@ -24,7 +23,6 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
                         county = if (is.na(county)) NULL else county,
                         variables = variables,
                         year = year,
-                        moe_level = 95,
                         survey = survey) %>%
       dplyr::mutate(year = year,
                     geography = geography)
@@ -53,7 +51,6 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
 #'                    table = c(rep('S2301', 3), NA),
 #'                    variables = c(rep(NA, 3), 'S2301_C03_001'),
 #'                    survey = c(rep('acs1', 3), 'acs5'),
-#'                    moe_level = c(rep(95),
 #'                    year = rep(current_year, 4),
 #'                    use_table = c(rep(T, 3), F))
 #'
@@ -86,7 +83,7 @@ ff_iterate_acs <- function(parameters_list) {
 #' Its use case is to update the indicators.
 #'
 #' @param subject table or variable name as a string
-#' @param year The year to import data.
+#' @param year The year to improt data.
 #' @param table Boolean indicating whether `subject` is a table or variable.
 #' `table = T` indicates that `subject` is a table
 #' @return A tidy dataframe with all census data.  Additional columns for the year and geographic
@@ -106,7 +103,6 @@ ff_all_year_acs <- function(subject, year, table) {
                      variables = rep(if (table == F) subject else NA, 3),
                      survey = rep('acs1', 3),
                      year = rep(year, 3),
-                     moe_level = rep(95, 3),
                      use_table = rep(table, 3))
 
   df <- ff_iterate_acs(parameters)
