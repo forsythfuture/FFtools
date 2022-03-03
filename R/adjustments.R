@@ -27,7 +27,15 @@ ff_inflation_adjust <- function(data_frame, wages_col, se_col, year_col, year_ad
 
   # import CPI All items index data
   monthly_cpi <- utils::read.table("http://research.stlouisfed.org/fred2/data/CPIAUCSL.txt",
-                                    skip = 53, header = TRUE)
+                                    skip = 53, header = TRUE) %>%
+    tibble::rownames_to_column()
+
+  # relabel column names
+  colnames(monthly_cpi) <- monthly_cpi[1,]
+
+  # delete the first row since it repeats the column names
+  monthly_cpi <- monthly_cpi %>%
+    dplyr::slice(-1,)
 
   # extract year and place in its own column
   # have the column be the same name as the year column in the input dataframe,
@@ -37,7 +45,7 @@ ff_inflation_adjust <- function(data_frame, wages_col, se_col, year_col, year_ad
   # calculate mean CPI for the year
   yearly_cpi <- monthly_cpi %>%
     dplyr::group_by_at(dplyr::vars(year_col)) %>%
-    dplyr::summarize(cpi = mean(VALUE))
+    dplyr::summarize(cpi = mean(as.numeric(VALUE)))
 
   # calculate inflation rate compared to adjustment year
   yearly_cpi$adj_factor <- yearly_cpi$cpi[yearly_cpi[[year_col]] == year_adjust]/yearly_cpi$cpi
