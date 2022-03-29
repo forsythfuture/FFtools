@@ -7,6 +7,8 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
 
   if (use_table == T) {
 
+    message('ff_single_acs pulls the MOE at the 90% CI')
+
     tidycensus::get_acs(geography = geography,
                         state = if (is.na(state)) NULL else state,
                         county = if (is.na(county)) NULL else county,
@@ -17,6 +19,8 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
                     geography = geography)
 
   } else if (use_table == F) {
+
+    message('ff_single_acs pulls the MOE at the 90% CI')
 
     tidycensus::get_acs(geography = geography,
                         state = if (is.na(state)) NULL else state,
@@ -32,9 +36,6 @@ ff_single_acs <- function(geography, state, county, table, variables, year,
     stop('use_table must be either TRUE or FALSE')
 
   }
-
-  #TODO Check that warning is done correctly
-  warning('ff_single_acs pulls the MOE at the 90% CI')
 }
 
 #' Iteratively import ACS data
@@ -66,14 +67,13 @@ ff_iterate_acs <- function(parameters_list) {
   acs <- purrr::pmap(parameters_list, ff_single_acs) %>%
     dplyr::bind_rows() %>%
     dplyr::left_join(acs_lookup, by = c('variable' = 'name')) %>%
-    # calculate standard error from 95% confidence interval
-    # TODO Second analyst needs to check recode below
-    dplyr::mutate(se = case_when(is.na(moe) ~ 0, TRUE ~ moe/1.645)) %>%
+    # calculate standard error from 90% confidence interval
+    dplyr::mutate(se = dplyr::case_when(is.na(moe) ~ 0, TRUE ~ moe/1.645)) %>%
     # rename columns to match standards
     dplyr::rename(geo_description = NAME, description = label) %>%
     dplyr::select(-GEOID, -variable, -moe) %>%
     # change county name labels from "County, North Carolina" to "County, NC"
-    dplyr::mutate(geo_description = str_replace(geo_description, "County, North Carolina", "County, NC"))
+    dplyr::mutate(geo_description = stringr::str_replace(geo_description, "County, North Carolina", "County, NC"))
 
   return(acs)
 
